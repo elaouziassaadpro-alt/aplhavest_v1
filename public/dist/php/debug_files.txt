@@ -1,0 +1,83 @@
+Array
+(
+    [fichiers] => Array
+        (
+            [name] => Array
+                (
+                    [ice] => 
+                    [status] => 
+                    [rc] => 
+                    [agrement] => 
+                    [ni_fs_rg] => 
+                    [loi_ep] => 
+                    [etat_synthese] => 
+                )
+
+            [full_path] => Array
+                (
+                    [ice] => 
+                    [status] => 
+                    [rc] => 
+                    [agrement] => 
+                    [ni_fs_rg] => 
+                    [loi_ep] => 
+                    [etat_synthese] => 
+                )
+
+            [type] => Array
+                (
+                    [ice] => 
+                    [status] => 
+                    [rc] => 
+                    [agrement] => 
+                    [ni_fs_rg] => 
+                    [loi_ep] => 
+                    [etat_synthese] => 
+                )
+
+            [tmp_name] => Array
+                (
+                    [ice] => 
+                    [status] => 
+                    [rc] => 
+                    [agrement] => 
+                    [ni_fs_rg] => 
+                    [loi_ep] => 
+                    [etat_synthese] => 
+                )
+
+            [error] => Array
+                (
+                    [ice] => 4
+                    [status] => 4
+                    [rc] => 4
+                    [agrement] => 4
+                    [ni_fs_rg] => 4
+                    [loi_ep] => 4
+                    [etat_synthese] => 4
+                )
+
+            [size] => Array
+                (
+                    [ice] => 0
+                    [status] => 0
+                    [rc] => 0
+                    [agrement] => 0
+                    [ni_fs_rg] => 0
+                    [loi_ep] => 0
+                    [etat_synthese] => 0
+                )
+
+        )
+
+    [mandat_pouvoir] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)
