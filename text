@@ -1,0 +1,66 @@
+public function store(Request $request)
+{
+    // 1. Validate inputs
+    $request->validate([
+        'raisonSocial' => 'nullable|string|max:200',
+        'capitalSocialPrimaire' => 'nullable|string|max:100',
+        'FormeJuridique' => 'nullable|exists:formes_juridiques,id',
+        'dateImmatriculation' => 'nullable|date',
+        'ice' => 'nullable|string|max:100',
+        'rc' => 'nullable|string|max:100',
+        'ifiscal' => 'nullable|string|max:100',
+        'siegeSocial' => 'nullable|string|max:350',
+        'paysActivite' => 'required|exists:pays,id',
+        'paysResidence' => 'required|exists:pays,id',
+        'regule' => 'nullable|boolean',
+        'nomRegulateur' => 'nullable|string|max:200',
+        'telephone' => 'nullable|string|max:15',
+        'email' => 'nullable|email|max:200',
+        'siteweb' => 'nullable|string|max:100',
+
+        // Optional: validate contacts arrays
+        'noms_contacts.*' => 'nullable|string|max:100',
+        'prenoms_contacts.*' => 'nullable|string|max:100',
+        'fonctions_contacts.*' => 'nullable|string|max:100',
+        'telephones_contacts.*' => 'nullable|string|max:50',
+        'emails_contacts.*' => 'nullable|email|max:150',
+    ]);
+
+    // 2. Create InfoGeneral record
+    $infoGeneral = InfoGeneral::create([
+        'raisonSocial' => $request->raisonSocial,
+        'capitalSocialPrimaire' => $request->capitalSocialPrimaire ?? '0',
+        'FormeJuridique' => $request->FormeJuridique,
+        'dateImmatriculation' => $request->dateImmatriculation,
+        'ice' => $request->ice,
+        'rc' => $request->rc,
+        'if' => $request->ifiscal,
+        'siege_social' => $request->siegeSocial,
+        'lieu_activite_id' => $request->paysActivite,
+        'residence_fiscale_id' => $request->paysResidence,
+        'regule' => $request->regule ?? 0,
+        'nom_autorite_regulation' => $request->nomRegulateur,
+        'telephone' => $request->telephone,
+        'email' => $request->email,
+        'site_web' => $request->siteweb,
+    ]);
+
+    // 3. Save contacts if any
+    if ($request->has('noms_contacts')) {
+        foreach ($request->noms_contacts as $index => $nom) {
+            if ($nom) {
+                $infoGeneral->contacts()->create([
+                    'nom' => $nom,
+                    'prenom' => $request->prenoms_contacts[$index] ?? null,
+                    'fonction' => $request->fonctions_contacts[$index] ?? null,
+                    'telephone' => $request->telephones_contacts[$index] ?? null,
+                    'email' => $request->emails_contacts[$index] ?? null,
+                ]);
+            }
+        }
+    }
+
+    // 4. Redirect with success message
+    return redirect()->route('infogeneral.create')
+                     ->with('success', 'Informations enregistrées avec succès!');
+}

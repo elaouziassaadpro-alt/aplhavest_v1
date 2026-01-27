@@ -138,301 +138,272 @@ function toggleTheme(value) {
 $(".preloader").fadeOut();
 
 
-$(document).ready(function(){
-          $('#addContactRowBtn').click(function(e){
-            e.preventDefault();
-            var rowsCount = $(".contactRowInfos").length;
-            rowsCount++;
-            var contactRow = `
 
-              <div class="row contactRowInfos contactRow`+rowsCount+`">
-
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Nom"
-                    name="noms_contacts[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Prénom"
-                    name="prenoms_contacts[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Fonction"
-                    name="fonctions_contacts[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Téléphone"
-                    name="telephones_contacts[]"
-                  /> 
-                </div>
-                <div class="col-md-3">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Email"
-                    name="emails_contacts[]"
-                  /> 
-                </div>
-                <div class="col-md-1">
-                  <a href="#" style="line-height: 3;" class="deleteContactRow deleteContactRow`+rowsCount+`" data-rowID="`+rowsCount+`"><center><i class="ti ti-trash w-100 h5"></i></center></a>
-                </div>
-              </div>
-
-            `;
-
-
-
-            if(rowsCount <= 5)
-            {
-              $(".contactsRows").append(contactRow);
-              phonemask();
-              emailmask();
-              $(".deleteContactRow.deleteContactRow"+(rowsCount-1)).hide();
-            }
-            else
-            {
-              alert("Vous ne pouvez ajouter que 5 Contacts !");
-            }
-          });
-
-          $(document).on('click', '.deleteContactRow', function(x){
-            x.preventDefault();
-
-            var rowID = $(this).data('rowid');
-
-            if (rowID !== 0 && rowID <= 5) {
-                $('.contactRow' + rowID).remove();
-                $(".deleteContactRow.deleteContactRow"+(rowID-1)).show();
-              }
-          });
-        });
 
 
 // Coordonnées Bancaires
 
-$(document).ready(function(){
-          $('#addCBancairesRowBtn').click(function(e){
-            e.preventDefault();
-            var rowsCount = $(".CBancairesRowInfos").length;
-            rowsCount++;
+// $(document).ready(function(){
+//           $('#addCBancairesRowBtn').click(function(e){
+//             e.preventDefault();
+//             var rowsCount = $(".CBancairesRowInfos").length;
+//             rowsCount++;
 
-            var CBancairesRow = `
+//             var CBancairesRow = `
 
-              <div class="row CBancairesRowInfos CBancairesRow`+rowsCount+`">
+//               <div class="row CBancairesRowInfos CBancairesRow`+rowsCount+`">
 
-                <div class="col-md-3">
-                  <select class="form-control banques" name="noms_banques[]">
-                    <option value="10000">Selectionnez une banque</option>
-                  </select>
-                </div>
-                <div class="col-md-3">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Agence"
-                    name="agences_banques[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <select class="form-control villes_banques" name="villes_banques[]">
-                    <option value="10000">Selectionnez une ville</option>
-                  </select>
-                </div>
-                <div class="col-md-3">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="RIB"
-                    name="ribs_banques[]"
-                  /> 
-                </div>
-                <div class="col-md-1">
-                  <a href="#" style="line-height: 3;" class="deleteCBancairesRow deleteCBancairesRow`+rowsCount+`" data-rowID="`+rowsCount+`"><center><i class="ti ti-trash w-100 h5"></i></center></a>
-                </div>
-              </div>
+//                 <div class="col-md-4 mb-3">
+//                         <div class="custom-select-wrapper">
+//                             <input type="text" id="formeInputpay" class="form-control" placeholder="Selectionnez une banque">
+//                             <ul id="formeDropdownpay" class="custom-dropdown">
+//                                 @foreach($banques as $banque)
+//                                     <li data-value="{{ $banque->id }}">{{ $banque->nom }}</li>
+//                                 @endforeach
+//                             </ul>
+//                             <input type="hidden" id="formeSelectpay" name="banque" required>
+//                         </div>
+//                     </div>
+//                 <div class="col-md-2">
+//                   <select class="form-control villes_banques" name="villes_banques[]">
+//                     <option value="10000">Selectionnez une ville</option>
+//                   </select>
+//                 </div>
+//                 <div class="col-md-3">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="RIB"
+//                     name="ribs_banques[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-1">
+//                   <a href="#" style="line-height: 3;" class="deleteCBancairesRow deleteCBancairesRow`+rowsCount+`" data-rowID="`+rowsCount+`"><center><i class="ti ti-trash w-100 h5"></i></center></a>
+//                 </div>
+//               </div>
 
-            `;
+//             `;
 
-            if(rowsCount <= 5)
-            {
-              $(".CBancairesRows").append(CBancairesRow);
+            
+//           });
 
-              // GET BANQUES
-              $('.banques:last').select2({
-                ajax: {
-                  url: '../../../package/dist/php/get_banques.php',
-                  dataType: 'json',
-                  delay: 250,
-                  data: function (params) {
-                    return {
-                      q: params.term // la recherche saisie par l'utilisateur
-                    };
-                  },
-                  processResults: function (data) {
-                    if(data.error) {
-                      alert(data.error);
-                      return { results: [] };
-                    }
-                    return {
-                      results: data.map(function(item) {
-                        return {
-                          id: item.id,
-                          text: item.nom
-                        };
-                      })
-                    };
-                  },
-                  cache: true
-                },
-                placeholder: 'Sélectionnez un élément',
-                minimumInputLength: 0
-              });
+//           $(document).on('click', '.deleteCBancairesRow', function(x){
+//             x.preventDefault();
 
-              // GET VILLES BANQUES
-              $('.villes_banques:last').select2({
-                ajax: {
-                  url: '../../../package/dist/php/get_villes.php',
-                  dataType: 'json',
-                  delay: 250,
-                  data: function (params) {
-                    return {
-                      q: params.term // la recherche saisie par l'utilisateur
-                    };
-                  },
-                  processResults: function (data) {
-                    if(data.error) {
-                      alert(data.error);
-                      return { results: [] };
-                    }
-                    return {
-                      results: data.map(function(item) {
-                        return {
-                          id: item.id,
-                          text: item.libelle
-                        };
-                      })
-                    };
-                  },
-                  cache: true
-                },
-                placeholder: 'Sélectionnez un élément',
-                minimumInputLength: 0
-              });
+//             var rowID = $(this).data('rowid');
 
-              $(".deleteCBancairesRow.deleteCBancairesRow"+(rowsCount-1)).hide();
-            }
-            else
-            {
-              alert("Vous ne pouvez ajouter que 5 Comptes Bancaires !");
-            }
-          });
+//             if (rowID !== 0 && rowID <= 5) {
+//                 $('.CBancairesRow' + rowID).remove();
+//                 $(".deleteCBancairesRow.deleteCBancairesRow"+(rowID-1)).show();
+//               }
+//           });
+//         });
 
-          $(document).on('click', '.deleteCBancairesRow', function(x){
-            x.preventDefault();
 
-            var rowID = $(this).data('rowid');
 
-            if (rowID !== 0 && rowID <= 5) {
-                $('.CBancairesRow' + rowID).remove();
-                $(".deleteCBancairesRow.deleteCBancairesRow"+(rowID-1)).show();
-              }
-          });
-        });
 
+// $(document).ready(function () {
+
+//     $('#addCBancairesRowBtn').on('click', function (e) {
+//         e.preventDefault();
+
+//         let rowsCount = $('.CBancairesRowInfos').length + 1;
+
+//         if (rowsCount > 5) {
+//             alert("Vous ne pouvez ajouter que 5 Comptes Bancaires !");
+//             return;
+//         }
+
+//         let banquesList = '';
+//         banquesData.forEach(banque => {
+//             banquesList += `<li data-value="${banque.id}">${banque.nom}</li>`;
+//         });
+//         let villesList = '';
+//         villesData.forEach(ville => {
+//             villesList += `<li data-value="${ville.id}">${ville.libelle}</li>`;
+//         });
+
+//         let CBancairesRow = `
+//         <div class="row CBancairesRowInfos CBancairesRow${rowsCount}">
+
+//             <div class="col-md-3 mb-3">
+//                 <div class="custom-select-wrapper">
+//                     <input
+//                         type="text"
+//                         class="form-control banque-search"
+//                         placeholder="Sélectionnez une banque"
+//                     >
+//                     <ul class="custom-dropdown">
+//                         ${banquesList}
+//                     </ul>
+//                     <input
+//                         type="hidden"
+//                         name="banques[]"
+//                         required
+//                     >
+//                 </div>
+//             </div>
+//             <div class="col-md-3">
+//                 <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="Agence"
+//                     name="agences_banques[]"
+//                 />
+//             </div>
+
+//             <div class="col-md-2">
+//                 <div class="custom-select-wrapper">
+//                     <input
+//                         type="text"
+//                         class="form-control banque-search"
+//                         placeholder="Sélectionnez une banque"
+//                     >
+//                     <ul class="custom-dropdown">
+//                         ${villesList}
+//                     </ul>
+//                     <input
+//                         type="hidden"
+//                         name="villes[]"
+//                         required
+//                     >
+//                 </div>
+//             </div>
+
+//             <div class="col-md-3">
+//                 <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="RIB"
+//                     name="ribs_banques[]"
+//                 />
+//             </div>
+
+//             <div class="col-md-1 text-center">
+//                 <a
+//                     href="#"
+//                     class="deleteCBancairesRow deleteCBancairesRow${rowsCount}"
+//                     data-rowid="${rowsCount}"
+//                     style="line-height: 3;"
+//                 >
+//                     <i class="ti ti-trash h5"></i>
+//                 </a>
+//             </div>
+//         </div>
+//         `;
+
+//         $('.CBancairesRows').append(CBancairesRow);
+
+//         $('.deleteCBancairesRow' + (rowsCount - 1)).hide();
+//     });
+
+//     // DELETE ROW
+//     $(document).on('click', '.deleteCBancairesRow', function (e) {
+//         e.preventDefault();
+
+//         let rowID = $(this).data('rowid');
+//         $('.CBancairesRow' + rowID).remove();
+
+//         if (rowID > 1) {
+//             $('.deleteCBancairesRow' + (rowID - 1)).show();
+//         }
+//     });
+
+//     // BANQUE SELECT
+//     $(document).on('click', '.custom-dropdown li', function () {
+//         let wrapper = $(this).closest('.custom-select-wrapper');
+
+//         wrapper.find('.banque-search').val($(this).text());
+//         wrapper.find('input[type="hidden"]').val($(this).data('value'));
+//         wrapper.find('.custom-dropdown').hide();
+//     });
+
+//     $(document).on('focus', '.banque-search', function () {
+//         $(this).siblings('.custom-dropdown').show();
+//     });
+
+// });
+    
 // Actionnaires
 
-$(document).ready(function(){
-          $('#addActionnaireRowBtn').click(function(e){
-            e.preventDefault();
-            var rowsCount = $(".actionnaireRowInfos").length;
-            rowsCount++;
-            var contactRow = `
+// $(document).ready(function(){
+//           $('#addActionnaireRowBtn').click(function(e){
+//             e.preventDefault();
+//             var rowsCount = $(".actionnaireRowInfos").length;
+//             rowsCount++;
+//             var contactRow = `
 
-              <div class="row actionnaireRowInfos actionnaireRow`+rowsCount+`">
+//               <div class="row actionnaireRowInfos actionnaireRow`+rowsCount+`">
 
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Nom / Raison sociale"
-                    name="noms_rs_actionnaires[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Prénom (p.physique)"
-                    name="prenoms_actionnaires[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="N° d'identité / N° du RC"
-                    name="identite_actionnaires[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Nombre de titres"
-                    name="nombre_titres_actionnaires[]"
-                  /> 
-                </div>
-                <div class="col-md-3">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="% Capital ou droit de vote"
-                    name="pourcentage_capital_actionnaires[]"
-                  /> 
-                </div>
-                <div class="col-md-1">
-                  <a href="#" style="line-height: 3;" class="deleteActionnaireRow deleteActionnaireRow`+rowsCount+`" data-rowID="`+rowsCount+`"><center><i class="ti ti-trash w-100 h5"></i></center></a>
-                </div>
-              </div>
+//                 <div class="col-md-2">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="Nom / Raison sociale"
+//                     name="noms_rs_actionnaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-2">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="Prénom (p.physique)"
+//                     name="prenoms_actionnaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-2">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="N° d'identité / N° du RC"
+//                     name="identite_actionnaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-2">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="Nombre de titres"
+//                     name="nombre_titres_actionnaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-3">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="% Capital ou droit de vote"
+//                     name="pourcentage_capital_actionnaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-1">
+//                   <a href="#" style="line-height: 3;" class="deleteActionnaireRow deleteActionnaireRow`+rowsCount+`" data-rowID="`+rowsCount+`"><center><i class="ti ti-trash w-100 h5"></i></center></a>
+//                 </div>
+//               </div>
 
-            `;
+//             `;
 
-            if(rowsCount <= 5)
-            {
-              $(".actionnairesRows").append(contactRow);
-              $(".deleteActionnaireRow.deleteActionnaireRow"+(rowsCount-1)).hide();
-            }
-            else
-            {
-              alert("Vous ne pouvez ajouter que 5 Actionnaires !");
-            }
-          });
+//             if(rowsCount <= 5)
+//             {
+//               $(".actionnairesRows").append(contactRow);
+//               $(".deleteActionnaireRow.deleteActionnaireRow"+(rowsCount-1)).hide();
+//             }
+//             else
+//             {
+//               alert("Vous ne pouvez ajouter que 5 Actionnaires !");
+//             }
+//           });
 
-          $(document).on('click', '.deleteActionnaireRow', function(x){
-            x.preventDefault();
+//           $(document).on('click', '.deleteActionnaireRow', function(x){
+//             x.preventDefault();
 
-            var rowID = $(this).data('rowid');
+//             var rowID = $(this).data('rowid');
 
-            if (rowID !== 0 && rowID <= 5) {
-                $('.actionnaireRow' + rowID).remove();
-                $(".deleteActionnaireRow.deleteActionnaireRow"+(rowID-1)).show();
-              }
-          });
-        });
+//             if (rowID !== 0 && rowID <= 5) {
+//                 $('.actionnaireRow' + rowID).remove();
+//                 $(".deleteActionnaireRow.deleteActionnaireRow"+(rowID-1)).show();
+//               }
+//           });
+//         });
 
 
 
@@ -562,202 +533,202 @@ $(document).ready(function () {
   });
 });
 
-$(document).ready(function(){
-          $('#addBenificiaireRowBtn').click(function(e){
-            e.preventDefault();
-            var rowsCount = $(".benificiaireRowInfos").length;
-            rowsCount++;
-            var contactRow = `
+// $(document).ready(function(){
+//           $('#addBenificiaireRowBtn').click(function(e){
+//             e.preventDefault();
+//             var rowsCount = $(".benificiaireRowInfos").length;
+//             rowsCount++;
+//             var contactRow = `
 
-              <div class="row benificiaireRowInfos benificiaireRow`+rowsCount+`">
+//               <div class="row benificiaireRowInfos benificiaireRow`+rowsCount+`">
 
-                <input type="text" name="ppe2_benificiaires[]" value="0" class="fichiers_caches" id="benificiaire_ppe2_id_`+rowsCount+`">
-                <input type="text" name="lien2_benificiaires[]" value="0" class="fichiers_caches" id="benificiaire_lien2_id_`+rowsCount+`">
+//                 <input type="text" name="ppe2_benificiaires[]" value="0" class="fichiers_caches" id="benificiaire_ppe2_id_`+rowsCount+`">
+//                 <input type="text" name="lien2_benificiaires[]" value="0" class="fichiers_caches" id="benificiaire_lien2_id_`+rowsCount+`">
 
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Nom / Raison sociale"
-                    name="noms_rs_benificiaires[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Prénom (p.physique)"
-                    name="prenoms_benificiaires[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <select class="form-control pays" name="pays_naissance_benificiaires[]">
-                    <option value="10000">Pays de naissance</option>
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <div class="form-group">
-                                  <input type="date" class="form-control" value="2025-05-13" name="dates_naissance_benificiaires[]">
-                              </div> 
-                </div>
-                <div class="col-md-1">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="CIN / Passeport"
-                    name="identite_benificiaires[]"
-                  /> 
-                </div>
-                <div class="col-md-2">
-                  <select class="form-control pays" name="nationalites_benificiaires[]">
-                    <option value="10000">Nationalité</option>
-                  </select>
-                </div>
+//                 <div class="col-md-2">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="Nom / Raison sociale"
+//                     name="noms_rs_benificiaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-2">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="Prénom (p.physique)"
+//                     name="prenoms_benificiaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-2">
+//                   <select class="form-control pays" name="pays_naissance_benificiaires[]">
+//                     <option value="10000">Pays de naissance</option>
+//                   </select>
+//                 </div>
+//                 <div class="col-md-2">
+//                   <div class="form-group">
+//                                   <input type="date" class="form-control" value="2025-05-13" name="dates_naissance_benificiaires[]">
+//                               </div> 
+//                 </div>
+//                 <div class="col-md-1">
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="CIN / Passeport"
+//                     name="identite_benificiaires[]"
+//                   /> 
+//                 </div>
+//                 <div class="col-md-2">
+//                   <select class="form-control pays" name="nationalites_benificiaires[]">
+//                     <option value="10000">Nationalité</option>
+//                   </select>
+//                 </div>
 
-                <div class="col-md-1">
-                  <a href="#" style="line-height: 3;" class="deleteBenificiaireRow deleteBenificiaireRow`+rowsCount+`" data-rowID="`+rowsCount+`"><center><i class="ti ti-trash w-100 h5"></i></center></a>
-                </div>
+//                 <div class="col-md-1">
+//                   <a href="#" style="line-height: 3;" class="deleteBenificiaireRow deleteBenificiaireRow`+rowsCount+`" data-rowID="`+rowsCount+`"><center><i class="ti ti-trash w-100 h5"></i></center></a>
+//                 </div>
 
-                <div class="col-md-1">
-                  <div class="mb-6">
-                    <div class="mb-4 bt-switch">
-                      <label>PPE </label>
-                      <input
-                        type="checkbox"
-                        data-checked="false"
-                        data-on-color="primary"
-                        data-off-color="default"
-                        data-off-text="Non"
-                        data-on-text="Oui"
-                  class="smart-switch ben_ppe"
-                  id="benificiaire_ppe_id_`+rowsCount+`"
-                  name="benificiaires_ppe_check[]"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="hidden-select" id="benificiaire_ppe_data_id_`+rowsCount+`" style="display:none;">
+//                 <div class="col-md-1">
+//                   <div class="mb-6">
+//                     <div class="mb-4 bt-switch">
+//                       <label>PPE </label>
+//                       <input
+//                         type="checkbox"
+//                         data-checked="false"
+//                         data-on-color="primary"
+//                         data-off-color="default"
+//                         data-off-text="Non"
+//                         data-on-text="Oui"
+//                   class="smart-switch ben_ppe"
+//                   id="benificiaire_ppe_id_`+rowsCount+`"
+//                   name="benificiaires_ppe_check[]"
+//                       />
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div class="col-md-3">
+//                   <div class="hidden-select" id="benificiaire_ppe_data_id_`+rowsCount+`" style="display:none;">
 
-                  <label>Libelle PPE </label>
-                  <select class="form-control ppes" name="benificiaires_ppe_input[]">
-                    <option value="10000">PPE</option>
-                  </select>
+//                   <label>Libelle PPE </label>
+//                   <select class="form-control ppes" name="benificiaires_ppe_input[]">
+//                     <option value="10000">PPE</option>
+//                   </select>
 
-                  </div>
-                </div>
+//                   </div>
+//                 </div>
 
-                <div class="col-md-2">
-                  <div class="mb-6">
-                    <div class="mb-4 bt-switch">
-                      <label>Lien avec une personne PPE </label>
-                      <input
-                        type="checkbox"
-                        data-checked="false"
-                        data-on-color="primary"
-                        data-off-color="default"
-                        data-off-text="Non"
-                        data-on-text="Oui"
-                  class="smart-switch ben_lien"
-                  id="benificiaire_ppe_lien_id_`+rowsCount+`"
-                  name="benificiaires_ppe_lien_check[]"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-2">
-                  <div class="hidden-select" id="benificiaire_ppe_lien_data_id_`+rowsCount+`" style="display:none;">
+//                 <div class="col-md-2">
+//                   <div class="mb-6">
+//                     <div class="mb-4 bt-switch">
+//                       <label>Lien avec une personne PPE </label>
+//                       <input
+//                         type="checkbox"
+//                         data-checked="false"
+//                         data-on-color="primary"
+//                         data-off-color="default"
+//                         data-off-text="Non"
+//                         data-on-text="Oui"
+//                   class="smart-switch ben_lien"
+//                   id="benificiaire_ppe_lien_id_`+rowsCount+`"
+//                   name="benificiaires_ppe_lien_check[]"
+//                       />
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div class="col-md-2">
+//                   <div class="hidden-select" id="benificiaire_ppe_lien_data_id_`+rowsCount+`" style="display:none;">
 
-                  <label>Libelle PPE </label>
-                  <select class="form-control ppes" name="benificiaires_ppe_lien_input[]">
-                    <option value="10000">PPE</option>
-                  </select>
+//                   <label>Libelle PPE </label>
+//                   <select class="form-control ppes" name="benificiaires_ppe_lien_input[]">
+//                     <option value="10000">PPE</option>
+//                   </select>
 
-                  </div>
-                </div>
-                <div class="col-md-2">
-                  <label>% du capital</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="% du capital"
-                   name="benificiaires_pourcentage_capital[]"
-                  /> 
-                </div>
-                  <div class="col-md-1">
-                  <label></label>
-                    <input type="file" 
-                             id="cin_file_ben_` + rowsCount + `"
-                             name="cin_benificiaires[]" 
-                             style="display:none;" 
-                             accept=".pdf,.jpg,.png" />
+//                   </div>
+//                 </div>
+//                 <div class="col-md-2">
+//                   <label>% du capital</label>
+//                   <input
+//                     type="text"
+//                     class="form-control"
+//                     placeholder="% du capital"
+//                    name="benificiaires_pourcentage_capital[]"
+//                   /> 
+//                 </div>
+//                   <div class="col-md-1">
+//                   <label></label>
+//                     <input type="file" 
+//                              id="cin_file_ben_` + rowsCount + `"
+//                              name="cin_benificiaires[]" 
+//                              style="display:none;" 
+//                              accept=".pdf,.jpg,.png" />
 
-                      <label for="cin_file_ben_` + rowsCount + `" class="btn btn-primary w-100" data-bs-toggle="tooltip" data-bs-original-title="Joindre CIN">
-                        <i class="ti ti-upload"></i>&nbsp; CIN
-                      </label>
-                  </div>
-                  `;
+//                       <label for="cin_file_ben_` + rowsCount + `" class="btn btn-primary w-100" data-bs-toggle="tooltip" data-bs-original-title="Joindre CIN">
+//                         <i class="ti ti-upload"></i>&nbsp; CIN
+//                       </label>
+//                   </div>
+//                   `;
 
-                  if(rowsCount >= 1)
-                  {
-                    contactRow += "<hr>";
-                  }
+//                   if(rowsCount >= 1)
+//                   {
+//                     contactRow += "<hr>";
+//                   }
 
-                contactRow +=  `
-              </div>
+//                 contactRow +=  `
+//               </div>
 
 
-            `;
+//             `;
 
-            if(rowsCount <= 5)
-            {
+//             if(rowsCount <= 5)
+//             {
 
-              $(".benificiairesRows").append(contactRow);
-              getpays();
-              getppes();
+//               $(".benificiairesRows").append(contactRow);
+//               getpays();
+//               getppes();
 
-              $("#benificiaire_ppe_id_"+rowsCount).on('switchChange.bootstrapSwitch', function(event, state) {
-                $("#benificiaire_ppe_data_id_"+rowsCount).show();
-                  if(state) {
-                      // Checkbox cochée → afficher la div
-                      $("#benificiaire_ppe_data_id_"+rowsCount).show();
-                  } else {
-                      // Checkbox décochée → cacher la div
-                      $("#benificiaire_ppe_data_id_"+rowsCount).hide();
-                  }
-              });
+//               $("#benificiaire_ppe_id_"+rowsCount).on('switchChange.bootstrapSwitch', function(event, state) {
+//                 $("#benificiaire_ppe_data_id_"+rowsCount).show();
+//                   if(state) {
+//                       // Checkbox cochée → afficher la div
+//                       $("#benificiaire_ppe_data_id_"+rowsCount).show();
+//                   } else {
+//                       // Checkbox décochée → cacher la div
+//                       $("#benificiaire_ppe_data_id_"+rowsCount).hide();
+//                   }
+//               });
 
-              $("#benificiaire_ppe_lien_id_"+rowsCount).on('switchChange.bootstrapSwitch', function(event, state) {
-                $("#benificiaire_ppe_lien_data_id_"+rowsCount).show();
-                  if(state) {
-                      // Checkbox cochée → afficher la div
-                      $("#benificiaire_ppe_lien_data_id_"+rowsCount).show();
-                  } else {
-                      // Checkbox décochée → cacher la div
-                      $("#benificiaire_ppe_lien_data_id_"+rowsCount).hide();
-                  }
-              });
+//               $("#benificiaire_ppe_lien_id_"+rowsCount).on('switchChange.bootstrapSwitch', function(event, state) {
+//                 $("#benificiaire_ppe_lien_data_id_"+rowsCount).show();
+//                   if(state) {
+//                       // Checkbox cochée → afficher la div
+//                       $("#benificiaire_ppe_lien_data_id_"+rowsCount).show();
+//                   } else {
+//                       // Checkbox décochée → cacher la div
+//                       $("#benificiaire_ppe_lien_data_id_"+rowsCount).hide();
+//                   }
+//               });
 
-              $('[type="checkbox"].smart-switch').bootstrapSwitch();
-              $(".deleteBenificiaireRow.deleteBenificiaireRow"+(rowsCount-1)).hide();
-            }
-            else
-            {
-              alert("Vous ne pouvez ajouter que 5 Bénificiaires !");
-            }
-          });
+//               $('[type="checkbox"].smart-switch').bootstrapSwitch();
+//               $(".deleteBenificiaireRow.deleteBenificiaireRow"+(rowsCount-1)).hide();
+//             }
+//             else
+//             {
+//               alert("Vous ne pouvez ajouter que 5 Bénificiaires !");
+//             }
+//           });
 
-          $(document).on('click', '.deleteBenificiaireRow', function(x){
-            x.preventDefault();
+//           $(document).on('click', '.deleteBenificiaireRow', function(x){
+//             x.preventDefault();
 
-            var rowID = $(this).data('rowid');
+//             var rowID = $(this).data('rowid');
 
-            if (rowID !== 0 && rowID <= 5) {
-                $('.benificiaireRow' + rowID).remove();
-                $(".deleteBenificiaireRow.deleteBenificiaireRow"+(rowID-1)).show();
-              }
-          });
-        });
+//             if (rowID !== 0 && rowID <= 5) {
+//                 $('.benificiaireRow' + rowID).remove();
+//                 $(".deleteBenificiaireRow.deleteBenificiaireRow"+(rowID-1)).show();
+//               }
+//           });
+//         });
 
 // Administrateurs / Dirigeants
 

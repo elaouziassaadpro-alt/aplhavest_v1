@@ -2,26 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Etablissement;
+use App\Models\PersonnesHabilites;
 use Illuminate\Http\Request;
 
-class EtablissementController extends Controller
+class PersonnesHabilitesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view("etablissements.index");
+        //
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    // public function create()
-    // {
-    //     return view("etablissements.create");
-    // }
+    public function create()
+    {
+        //
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -34,7 +34,7 @@ class EtablissementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Etablissement $etablissement)
+    public function show(PersonnesHabilites $personnesHabilites)
     {
         //
     }
@@ -42,7 +42,7 @@ class EtablissementController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Etablissement $etablissement)
+    public function edit(PersonnesHabilites $personnesHabilites)
     {
         //
     }
@@ -50,7 +50,7 @@ class EtablissementController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Etablissement $etablissement)
+    public function update(Request $request, PersonnesHabilites $personnesHabilites)
     {
         //
     }
@@ -58,7 +58,7 @@ class EtablissementController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Etablissement $etablissement)
+    public function destroy(PersonnesHabilites $personnesHabilites)
     {
         //
     }

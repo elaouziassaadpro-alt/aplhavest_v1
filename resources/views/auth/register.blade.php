@@ -1,52 +1,122 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="handheldfriendly" content="true" />
+    <meta name="MobileOptimized" content="width" />
+    <meta name="description" content="Modernize" />
+    <meta name="author" content="" />
+    <meta name="keywords" content="Modernize" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <link rel="shortcut icon" type="image/png" href="{{ asset('dist/images/logos/favicon.ico') }}" />
+    <link rel="stylesheet" href="{{ asset('dist/libs/prismjs/themes/prism-okaidia.min.css') }}">
+    <link id="themeColors" rel="stylesheet" href="{{ asset('dist/css/style.min.css') }}" />
+    <title>Register</title>
+</head>
+<body>
+<!-- Preloader -->
+<div class="preloader">
+  <img src="{{ asset('dist/images/logos/favicon.ico') }}" alt="loader" class="lds-ripple img-fluid" />
+</div>
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+<!-- Body Wrapper -->
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+  <div class="position-relative overflow-hidden radial-gradient min-vh-100">
+    <div class="position-relative z-index-5">
+      <div class="row">
+        <!-- Left side -->
+        <div class="col-xl-7 col-xxl-8">
+          <a href="{{ url('/') }}" class="text-nowrap logo-img d-block px-4 py-9 w-100">
+            <img src="{{ asset('dist/images/logos/alphavest-logo.png') }}" width="180" alt="Logo">
+          </a>
+          <div class="d-none d-xl-flex align-items-center justify-content-center" style="height: calc(100vh - 80px);">
+            <img src="{{ asset('dist/images/backgrounds/login-security.svg') }}" alt="Security" class="img-fluid" width="500">
+          </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <!-- Right side -->
+        <div class="col-xl-5 col-xxl-4">
+          <div class="authentication-login min-vh-100 bg-body row justify-content-center align-items-center p-4">
+            <div class="col-sm-8 col-md-6 col-xl-9">
+              <h2 class="mb-3 fs-7 fw-bolder">Créer un compte</h2>
+              <p class="mb-9">Par <b>AlphaVest Asset Management</b></p>
+
+              <!-- Error messages -->
+              <div class="errors">
+                @if ($errors->any())
+                  <div class="p text-danger">
+                    <i class="ti ti-info-triangle-filled"></i>
+                    @foreach ($errors->all() as $error)
+                      {{ $error }}<br>
+                    @endforeach
+                  </div>
+                @endif
+
+                @if (session('status'))
+                  <div class="p text-danger">
+                    <i class="ti ti-info-triangle-filled"></i> {{ session('status') }}
+                  </div>
+                @endif
+              </div>
+
+              <!-- Registration form -->
+              <form method="POST" action="{{ route('register') }}">
+                @csrf
+
+                <div class="mb-3">
+                  <label for="name" class="form-label">Nom complet</label>
+                  <input type="text" class="form-control" id="name" name="name" required placeholder="Votre nom complet" value="{{ old('name') }}">
+                </div>
+
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" required placeholder="Votre email" value="{{ old('email') }}">
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">Mot de passe</label>
+                  <input type="password" class="form-control" id="password" name="password" required placeholder="Mot de passe">
+                </div>
+
+                <div class="mb-3">
+                  <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
+                  <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required placeholder="Confirmez le mot de passe">
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                  <div class="form-check">
+                    <input class="form-check-input primary" type="checkbox" id="terms" name="terms" required>
+                    <label class="form-check-label text-dark" for="terms">
+                      J'accepte les <a href="#" class="text-primary">conditions d'utilisation</a>
+                    </label>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-8 mb-4 rounded-2">S'inscrire</button>
+
+                <p class="text-center">Vous avez déjà un compte ? <a href="{{ route('login') }}" class="text-primary fw-medium">Connexion</a></p>
+              </form>
+
+            </div>
+          </div>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+      </div>
+    </div>
+  </div>
+</div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+<!-- Import Js Files -->
+<script src="{{ asset('dist/libs/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ asset('dist/libs/simplebar/dist/simplebar.min.js') }}"></script>
+<script src="{{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('dist/js/app.min.js') }}"></script>
+<script src="{{ asset('dist/js/app.init.js') }}"></script>
+<script src="{{ asset('dist/js/app-style-switcher.js') }}"></script>
+<script src="{{ asset('dist/js/sidebarmenu.js') }}"></script>
+<script src="{{ asset('dist/js/custom.js') }}"></script>
+</body>
+</html>

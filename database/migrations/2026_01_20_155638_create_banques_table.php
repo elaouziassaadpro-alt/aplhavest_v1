@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('etablissements', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('banques', function (Blueprint $table) {
+            $table->id(); // primary key auto-increment
+            $table->string('nom', 100)->nullable();
+            $table->string('codeBanque', 10)->nullable();
+            $table->timestamps(); // optional: created_at & updated_at
         });
     }
 
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('etablissements');
+        Schema::dropIfExists('banques');
     }
 };
