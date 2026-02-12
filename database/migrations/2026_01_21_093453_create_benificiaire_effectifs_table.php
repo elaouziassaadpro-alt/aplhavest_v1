@@ -7,31 +7,70 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up()
-    {
-        Schema::create('beneficiaires_effectifs', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('info_generales_id'); // FK to infos_generales
+{
+    Schema::create('beneficiaires_effectifs', function (Blueprint $table) {
+        $table->id();
 
-            $table->string('nom_rs', 200)->nullable();        // Nom / Raison sociale
-            $table->string('prenom', 100)->nullable();        // Prénom si personne physique
-            $table->string('identite', 100)->nullable();      // N° d'identité ou RC
-            $table->decimal('pourcentage_capital', 5, 2)->nullable(); // % capital détenu
-            $table->string('fonction', 150)->nullable();      // Fonction dans la société
-            $table->string('nationalite', 100)->nullable();  // Nationalité
-            $table->unsignedBigInteger('PPE')->default(0);               // Personne politiquement exposée
-            $table->string('libelle_PPE', 200)->nullable();  // Libellé de PPE
+        // ============================
+        // RELATION PRINCIPALE
+        // ============================
+        $table->unsignedBigInteger('etablissement_id');
+            // Foreign keys (optional, if you have these tables)
+            $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
 
-            $table->timestamps();
+        // ============================
+        // INFOS PERSONNE
+        // ============================
+        $table->string('nom_rs', 200)->nullable();
+        $table->string('prenom', 100)->nullable();
 
-            // Foreign key to InfosGenerales
-            $table->foreign('info_generales_id')
-                  ->references('id')->on('info_generales')
-                  ->onDelete('cascade');
-            $table->foreign('PPE')
-                  ->references('id')->on('ppes')
-                  ->onDelete('cascade');
-        });
-    }
+        $table->unsignedBigInteger('pays_naissance_id')->nullable();
+        $table->date('date_naissance')->nullable();
+        $table->string('identite', 100)->nullable();
+        $table->string('cin_file', 100)->nullable();
+
+        $table->unsignedBigInteger('nationalite_id')->nullable();
+
+        $table->decimal('pourcentage_capital', 5, 2)->nullable();
+
+        // ============================
+        // PPE
+        // ============================
+        $table->boolean('ppe')->default(0);
+        $table->unsignedBigInteger('ppe_id')->nullable();
+
+        // ============================
+        // LIEN PPE
+        // ============================
+        $table->boolean('ppe_lien')->default(0);
+        $table->unsignedBigInteger('ppe_lien_id')->nullable();
+
+
+        $table->timestamps();
+
+        // ============================
+        // FOREIGN KEYS
+        // ============================
+        
+
+        $table->foreign('pays_naissance_id')
+              ->references('id')->on('pays')
+              ->nullOnDelete();
+
+        $table->foreign('nationalite_id')
+              ->references('id')->on('pays')
+              ->nullOnDelete();
+
+        $table->foreign('ppe_id')
+              ->references('id')->on('ppes')
+              ->nullOnDelete();
+
+        $table->foreign('ppe_lien_id')
+              ->references('id')->on('ppes')
+              ->nullOnDelete();
+    });
+}
+
 
     public function down()
     {

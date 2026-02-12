@@ -120,3 +120,39 @@
 }
 /* ------------------------------------------------ */
 /* Style pour les checkboxes PPE et Lien PPE */
+.cardetablissement{
+        padding: 50px;
+    border-radius: 20px;
+}
+.custom-select-wrapper {
+    position: relative;
+}
+
+.custom-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.custom-dropdown.show {
+    display: block; /* Shown when class is added via JS */
+}
+
+.custom-dropdown li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.custom-dropdown li:hover {
+    background-color: #f8f9fa;
+}

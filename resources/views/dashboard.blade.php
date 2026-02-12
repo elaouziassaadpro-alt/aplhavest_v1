@@ -7,73 +7,74 @@
         <div class="container-fluid mw-100">
           <!--  Owl carousel -->
           <div class="owl-carousel counter-carousel owl-theme">
-            <div class="item">
+          {{-- Bénéficiaires effectifs --}}
+          <div class="item">
               <div class="card border-0 zoom-in bg-light-primary shadow-none">
-                <div class="card-body">
-                  <div class="text-center">
-                    <img src="../../dist/images/svgs/icon-user-male.svg" width="50" height="50" class="mb-3" alt="" />
-                    <p class="fw-semibold fs-3 text-primary mb-1"> Employees </p>
-                    <h5 class="fw-semibold text-primary mb-0">96</h5>
+                  <div class="card-body text-center">
+                      <i class="ti ti-users fs-5 text-primary mb-2"></i>
+                      <p class="fw-semibold fs-3 text-primary mb-1">Bénéficiaires effectifs</p>
+                      <h5 class="fw-semibold text-primary mb-0">{{ $benificiaireseffectifs->count() }}</h5>
                   </div>
-                </div>
               </div>
-            </div>
-            <div class="item">
-              <div class="card border-0 zoom-in bg-light-warning shadow-none">
-                <div class="card-body">
-                  <div class="text-center">
-                    <img src="../../dist/images/svgs/icon-briefcase.svg" width="50" height="50" class="mb-3" alt="" />
-                    <p class="fw-semibold fs-3 text-warning mb-1">Clients</p>
-                    <h5 class="fw-semibold text-warning mb-0">3,650</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="item">
-              <div class="card border-0 zoom-in bg-light-info shadow-none">
-                <div class="card-body">
-                  <div class="text-center">
-                    <img src="../../dist/images/svgs/icon-mailbox.svg" width="50" height="50" class="mb-3" alt="" />
-                    <p class="fw-semibold fs-3 text-info mb-1">Projects</p>
-                    <h5 class="fw-semibold text-info mb-0">356</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="item">
-              <div class="card border-0 zoom-in bg-light-danger shadow-none">
-                <div class="card-body">
-                  <div class="text-center">
-                    <img src="../../dist/images/svgs/icon-favorites.svg" width="50" height="50" class="mb-3" alt="" />
-                    <p class="fw-semibold fs-3 text-danger mb-1">Events</p>
-                    <h5 class="fw-semibold text-danger mb-0">696</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="item">
-              <div class="card border-0 zoom-in bg-light-success shadow-none">
-                <div class="card-body">
-                  <div class="text-center">
-                    <img src="../../dist/images/svgs/icon-speech-bubble.svg" width="50" height="50" class="mb-3" alt="" />
-                    <p class="fw-semibold fs-3 text-success mb-1">Payroll</p>
-                    <h5 class="fw-semibold text-success mb-0">$96k</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="item">
-              <div class="card border-0 zoom-in bg-light-info shadow-none">
-                <div class="card-body">
-                  <div class="text-center">
-                    <img src="../../dist/images/svgs/icon-connect.svg" width="50" height="50" class="mb-3" alt="" />
-                    <p class="fw-semibold fs-3 text-info mb-1">Reports</p>
-                    <h5 class="fw-semibold text-info mb-0">59</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
+
+          {{-- Administrateurs --}}
+          <div class="item">
+              <div class="card border-0 zoom-in bg-light-warning shadow-none">
+                  <div class="card-body text-center">
+                      <i class="ti ti-briefcase fs-5 text-warning mb-2"></i>
+                      <p class="fw-semibold fs-3 text-warning mb-1">Administrateurs</p>
+                      <h5 class="fw-semibold text-warning mb-0">{{ $administrateurs->count() }}</h5>
+                  </div>
+              </div>
+          </div>
+
+          {{-- Actionnaires --}}
+          <div class="item">
+              <div class="card border-0 zoom-in bg-light-info shadow-none">
+                  <div class="card-body text-center">
+                      <i class="ti ti-wallet fs-5 text-info mb-2"></i>
+                      <p class="fw-semibold fs-3 text-info mb-1">Actionnaires</p>
+                      <h5 class="fw-semibold text-info mb-0">{{ $actionnaires->count() }}</h5>
+                  </div>
+              </div>
+          </div>
+
+          {{-- Etablissements --}}
+          <div class="item">
+              <div class="card border-0 zoom-in bg-light-danger shadow-none">
+                  <div class="card-body text-center">
+                      <i class="ti ti-building fs-5 text-danger mb-2"></i>
+                      <p class="fw-semibold fs-3 text-danger mb-1">Établissements</p>
+                      <h5 class="fw-semibold text-danger mb-0">{{ $etablissments->count() }}</h5>
+                  </div>
+              </div>
+          </div>
+
+          {{-- Contacts --}}
+          <div class="item">
+              <div class="card border-0 zoom-in bg-light-success shadow-none">
+                  <div class="card-body text-center">
+                      <i class="ti ti-phone fs-5 text-success mb-2"></i>
+                      <p class="fw-semibold fs-3 text-success mb-1">Contacts</p>
+                      <h5 class="fw-semibold text-success mb-0">{{ $contacts->count() }}</h5>
+                  </div>
+              </div>
+          </div>
+
+          {{-- Reports --}}
+          <div class="item">
+              <div class="card border-0 zoom-in bg-light-info shadow-none">
+                  <div class="card-body text-center">
+                      <i class="ti ti-file-text fs-5 text-info mb-2"></i>
+                      <p class="fw-semibold fs-3 text-info mb-1">Reports</p>
+                      <h5 class="fw-semibold text-info mb-0">59</h5>
+                  </div>
+              </div>
+          </div>
+
+      </div>
+
           <!--  Row 1 -->
           <div class="row">
             <div class="col-lg-8 d-flex align-items-strech">
@@ -112,14 +113,14 @@
                           <span class="round-8 bg-primary rounded-circle me-6"></span>
                           <div>
                             <p class="fs-3 mb-1">Earnings this month</p>
-                            <h6 class="fs-5 fw-semibold mb-0">$48,820</h6>
+                            <h6 class="fs-3 fw-semibold mb-0">$48,820</h6>
                           </div>
                         </div>
                         <div class="d-flex align-items-baseline mb-4 pb-1">
                           <span class="round-8 bg-secondary rounded-circle me-6"></span>
                           <div>
                             <p class="fs-3 mb-1">Expense this month</p>
-                            <h6 class="fs-5 fw-semibold mb-0">$26,498</h6>
+                            <h6 class="fs-3 fw-semibold mb-0">$26,498</h6>
                           </div>
                         </div>
                         <div>
@@ -277,7 +278,7 @@
                       <img src="../../dist/images/profile/user-1.jpg" class="shadow-warning rounded-2" alt="" width="72" height="72" />
                     </div>
                     <div>
-                      <h5 class="fw-semibold fs-5 mb-2"> Super awesome, Vue coming soon! </h5>
+                      <h5 class="fw-semibold fs-3 mb-2"> Super awesome, Vue coming soon! </h5>
                       <p class="fs-3 mb-0">22 March, 2023</p>
                     </div>
                   </div>
@@ -566,7 +567,7 @@
     <!--  Shopping Cart -->
     <div class="offcanvas offcanvas-end shopping-cart" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
       <div class="offcanvas-header py-4">
-        <h5 class="offcanvas-title fs-5 fw-semibold" id="offcanvasRightLabel">Shopping Cart</h5>
+        <h5 class="offcanvas-title fs-3 fw-semibold" id="offcanvasRightLabel">Shopping Cart</h5>
         <span class="badge bg-primary rounded-4 px-3 py-1 lh-sm">5 new</span>
       </div>
       <div class="offcanvas-body h-100 px-4 pt-0" data-simplebar>
@@ -748,7 +749,7 @@
                 </li>
                 <ul class="px-8 mt-7 mb-4">
                   <li class="sidebar-item mb-3">
-                    <h5 class="fs-5 fw-semibold">Quick Links</h5>
+                    <h5 class="fs-3 fw-semibold">Quick Links</h5>
                   </li>
                   <li class="sidebar-item py-2">
                     <a class="fw-semibold text-dark" href="#">Pricing Page</a>
@@ -810,11 +811,11 @@
           <div class="modal-header border-bottom">
             <input type="search" class="form-control fs-3" placeholder="Search here" id="search" />
             <span data-bs-dismiss="modal" class="lh-1 cursor-pointer">
-              <i class="ti ti-x fs-5 ms-3"></i>
+              <i class="ti ti-x fs-3 ms-3"></i>
             </span>
           </div>
           <div class="modal-body message-body" data-simplebar="">
-            <h5 class="mb-0 fs-5 p-1">Quick Page Links</h5>
+            <h5 class="mb-0 fs-3 p-1">Quick Page Links</h5>
             <ul class="list mb-0 py-2">
               <li class="p-1 mb-1 bg-hover-light-black">
                 <a href="#">
@@ -934,22 +935,22 @@
         <div class="d-flex align-items-center gap-3 my-3">
           <ul class="list-unstyled mb-0 d-flex gap-3 flex-wrap change-colors">
             <li class="rounded-2 p-9 customizer-box hover-img d-flex align-items-center justify-content-center">
-              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin1-bluetheme-primary active-theme " onclick="toggleTheme('../../dist/css/style.min.css')"  data-color="blue_theme" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="BLUE_THEME"><i class="ti ti-check text-white d-flex align-items-center justify-content-center fs-5"></i></a>
+              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin1-bluetheme-primary active-theme " onclick="toggleTheme('../../dist/css/style.min.css')"  data-color="blue_theme" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="BLUE_THEME"><i class="ti ti-check text-white d-flex align-items-center justify-content-center fs-3"></i></a>
             </li>
             <li class="rounded-2 p-9 customizer-box hover-img d-flex align-items-center justify-content-center">
-              <a href="javascript:void(0)"  class="rounded-circle position-relative d-block customizer-bgcolor skin2-aquatheme-primary " onclick="toggleTheme('../../dist/css/style-aqua.min.css')"  data-color="aqua_theme" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="AQUA_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-5"></i></a>
+              <a href="javascript:void(0)"  class="rounded-circle position-relative d-block customizer-bgcolor skin2-aquatheme-primary " onclick="toggleTheme('../../dist/css/style-aqua.min.css')"  data-color="aqua_theme" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="AQUA_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-3"></i></a>
             </li>
             <li class="rounded-2 p-9 customizer-box hover-img d-flex align-items-center justify-content-center">
-              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin3-purpletheme-primary" onclick="toggleTheme('../../dist/css/style-purple.min.css')"  data-color="purple_theme" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="PURPLE_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-5"></i></a>
+              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin3-purpletheme-primary" onclick="toggleTheme('../../dist/css/style-purple.min.css')"  data-color="purple_theme" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="PURPLE_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-3"></i></a>
             </li>
             <li class="rounded-2 p-9 customizer-box hover-img d-flex align-items-center justify-content-center">
-              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin4-greentheme-primary" onclick="toggleTheme('../../dist/css/style-green.min.css')"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="GREEN_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-5"></i></a>
+              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin4-greentheme-primary" onclick="toggleTheme('../../dist/css/style-green.min.css')"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="GREEN_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-3"></i></a>
             </li>
             <li class="rounded-2 p-9 customizer-box hover-img d-flex align-items-center justify-content-center">
-              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin5-cyantheme-primary" onclick="toggleTheme('../../dist/css/style-cyan.min.css')"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="CYAN_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-5"></i></a>
+              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin5-cyantheme-primary" onclick="toggleTheme('../../dist/css/style-cyan.min.css')"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="CYAN_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-3"></i></a>
             </li>
             <li class="rounded-2 p-9 customizer-box hover-img d-flex align-items-center justify-content-center">
-              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin6-orangetheme-primary" onclick="toggleTheme('../../dist/css/style-orange.min.css')"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="ORANGE_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-5"></i></a>
+              <a href="javascript:void(0)" class="rounded-circle position-relative d-block customizer-bgcolor skin6-orangetheme-primary" onclick="toggleTheme('../../dist/css/style-orange.min.css')"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="ORANGE_THEME"><i class="ti ti-check  text-white d-flex align-items-center justify-content-center fs-3"></i></a>
             </li>
           </ul>
         </div>

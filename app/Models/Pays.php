@@ -16,8 +16,10 @@ class Pays extends Model
         'iso',
         'niveauRisque',
     ];
-    
+    public function infoGenerales()
+    {
+        return $this->hasMany(InfoGeneral::class, 'paysResidence', 'id');
+    }
 
-    // If you don't want timestamps
-    // public $timestamps = false;
+
 }

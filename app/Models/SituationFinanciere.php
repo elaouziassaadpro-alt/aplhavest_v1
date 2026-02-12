@@ -13,7 +13,7 @@ class SituationFinanciere extends Model
     protected $table = 'situation_financiere';
 
     protected $fillable = [
-    'info_generales_id',
+    'etablissement_id',
     'capitalSocial',
     'origineFonds',
     'paysOrigineFonds',
@@ -27,6 +27,10 @@ class SituationFinanciere extends Model
     // Relation to InfosGenerales
     public function etablissement()
     {
-        return $this->belongsTo(InfoGeneral::class, 'info_general_id');
+        return $this->hasOne(Etablissement::class, 'etablissement_id');
+    }
+    public function paysOr()
+    {
+        return $this->belongsTo(Pays::class, 'paysOrigineFonds', 'id');
     }
 }

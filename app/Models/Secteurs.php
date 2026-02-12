@@ -19,6 +19,6 @@ class Secteurs extends Model
     ];
     public function TypologieClient()
     {
-        return $this->hasMany(TypologieClient::class, 'segment_id');
+        return $this->hasOne(TypologieClient::class, 'secteurActivite');
     }
 }

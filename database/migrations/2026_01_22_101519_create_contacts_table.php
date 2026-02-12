@@ -13,8 +13,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('info_general_id'); // FK to infos_generales
             
-            $table->string('nom', 100);
-            $table->string('prenom', 100);
+            $table->string('nom', 100)->nullable();
+            $table->string('prenom', 100)->nullable();
             $table->string('fonction', 100)->nullable();
             $table->string('telephone', 50)->nullable();
             $table->string('email', 150)->nullable();

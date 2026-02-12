@@ -14,7 +14,7 @@ class CoordonneesBancaires extends Model
 
     // Fillable fields
     protected $fillable = [
-        'info_generales_id',
+        'etablissement_id',
         'banque_id',
         'agences_banque',
         'ville_id',
@@ -22,9 +22,9 @@ class CoordonneesBancaires extends Model
     ];
 
     // Relationship to InfoGenerales (Etablissement)
-    public function infoGenerale()
+    public function etablissement()
     {
-        return $this->belongsTo(InfoGeneral::class, 'info_generales_id');
+        return $this->hasOne(Etablissement::class, 'etablissement_id');
     }
 
     // Relationship to Banque

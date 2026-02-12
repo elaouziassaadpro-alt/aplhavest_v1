@@ -14,7 +14,7 @@ class TypologieClient extends Model
 
     // Fillable fields for mass assignment
     protected $fillable = [
-        'info_generales_id',
+        'etablissement_id',
         'secteurActivite',
         'segment',
         'activiteEtranger',
@@ -26,26 +26,28 @@ class TypologieClient extends Model
     /**
      * Relationship to InfoGenerales (Etablissement)
      */
-    public function infoGenerale()
+    public function etablissement()
     {
-        return $this->belongsTo(InfoGeneral::class, 'info_generales_id');
+        return $this->hasOne(Etablissement::class, foreignKey: 'etablissement_id');
     }
 
     /**
      * Relationship to Secteur
      */
     public function secteur()
-    {
-        return $this->belongsTo(Secteurs::class, 'secteurActivite');
-    }
+{
+    return $this->belongsTo(Secteurs::class, 'secteurActivite');
+}
+
 
     /**
      * Relationship to Segment
      */
-    public function segmentInfo()
-    {
-        return $this->belongsTo(Segments::class, 'segment');
-    }
+    public function segment_get()
+{
+    return $this->belongsTo(Segments::class, 'segment');
+}
+
 
     /**
      * Relationship to Pays (for activiteEtranger)

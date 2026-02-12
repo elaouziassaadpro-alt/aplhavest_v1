@@ -16,7 +16,7 @@
             <div class="row align-items-center">
                 <div class="col-9">
                     <h4 class="fw-semibold mb-2">
-                        Establishment {{ $info_generales_id }}
+                        Établissement : {{ $etablissement->id }}
                     </h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
@@ -45,12 +45,12 @@
     <form action="{{ route('coordonneesbancaires.store') }}" method="POST">
         @csrf
 
-        <input type="hidden" name="info_generales_id" value="{{ $info_generales_id }}">
+        <input type="hidden" name="etablissement_id" value="{{ $etablissement->id }}">
 
-        <div class="card">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4 ">
             <div class="card-body">
 
-                <h5 class="mb-4">Coordonnées bancaires</h5>
+                <h2 class="text-xl font-semibold text-gray-800">Coordonnées bancaires</h2>
 
                 <!-- Dynamic rows -->
                 <div class="CBancairesRows"></div>

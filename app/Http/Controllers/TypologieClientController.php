@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InfoGeneral;
 use App\Models\TypologieClient;
 use App\Models\Secteurs;
 use App\Models\Segments;
 use App\Models\Pays;
 use Illuminate\Http\Request;
+use App\Models\Etablissement;
+
 use Termwind\Components\Dd;
 
 class TypologieClientController extends Controller
@@ -24,12 +27,14 @@ class TypologieClientController extends Controller
      */
     public function create(Request $request)
     {
-        $info_generales_id = $request->info_generales_id;
+
+        $etablissement_id = $request->etablissement_id;
+        $etablissement = Etablissement::find($etablissement_id);
         $secteurs = Secteurs::all();
         $segments = Segments::all();
         $pays = Pays::all();
 
-        return view('etablissements.infoetablissement.TypologieClient.create', compact('secteurs', 'segments', 'pays', 'info_generales_id'));
+        return view('etablissements.infoetablissement.TypologieClient.create', compact('secteurs', 'segments', 'pays', 'etablissement'));
     }
 
     /**
@@ -39,7 +44,7 @@ class TypologieClientController extends Controller
 {
     // Validation
     $validated = $request->validate([
-        'info_generales_id' => 'required|integer',
+        'etablissement_id' => 'required|integer',
         'secteurActivite' => 'required|integer',
         'segment' => 'required|integer',
         'activite_etranger' => 'nullable|boolean',
@@ -49,7 +54,7 @@ class TypologieClientController extends Controller
     ]);
     // // Création de l'enregistrement
     $typologieClient = TypologieClient::create([
-        'info_generales_id' => $validated['info_generales_id'],
+        'etablissement_id' => $validated['etablissement_id'],
         'secteurActivite' => $validated['secteurActivite'],
         'segment' => $validated['segment'],
         'activiteEtranger' => $request->has('activite_etranger') ? 1 : 0,
@@ -57,8 +62,15 @@ class TypologieClientController extends Controller
         'publicEpargne' => $request->has('sur_marche_financier') ? 1 : 0,
         'publicEpargne_label' => $request->has('sur_marche_financier') ? $validated['sur_marche_financier_input'] : null,
     ]);
+        $etablissement = Etablissement::findOrFail($request->etablissement_id);
 
-    return redirect()->route('statutfatca.create',['info_generales_id' => $request->info_generales_id])
+        if ($etablissement->fresh()->isCompleted()) {
+            return redirect()->route('Rating', [
+                'etablissement_id' => $etablissement->id
+            ]);
+
+        }
+    return redirect()->route('statutfatca.create',['etablissement_id' => $etablissement->id])
                      ->with('success', 'Typologie client enregistrée avec succès !');
 }
 
@@ -81,10 +93,25 @@ class TypologieClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TypologieClient $typologieClient)
-    {
-        //
-    }
+    public function update(Request $request, Etablissement $etablissement)
+{
+    $etablissement->typologieClient()->updateOrCreate(
+        ['etablissement_id' => $etablissement->id],
+        [
+            'secteurActivite'     => $request->secteurActivite,
+            'segment'             => $request->segment,
+            'activiteEtranger'    => $request->has('activiteEtranger'),
+            'paysEtranger'        => $request->has('activiteEtranger') ? $request->paysEtranger : null,
+            'publicEpargne'       => $request->has('publicEpargne'),
+            'publicEpargne_label' => $request->has('publicEpargne') ? $request->publicEpargne_label : null,
+        ]
+    );
+    
+    $etablissement->updateRiskRating();
+
+    return back()->with('success', 'Typologie du client mise à jour');
+}
+
 
     /**
      * Remove the specified resource from storage.

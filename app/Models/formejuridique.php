@@ -14,4 +14,9 @@ use HasFactory;
     protected $fillable = [
         'libelle',
         'code',
-    ];}
+    ];
+    public function InfoGeneral()
+    {
+        return $this->hasOne(InfoGeneral::class);
+    }
+    }

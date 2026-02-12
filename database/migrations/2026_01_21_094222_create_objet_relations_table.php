@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('objet_relations', function (Blueprint $table) {
             $table->id();
 
-            // Foreign key to info_generales
-            $table->unsignedBigInteger('info_general_id');
-            $table->foreign('info_general_id')->references('id')->on('info_generales')->onDelete('cascade');
-
+            $table->unsignedBigInteger('etablissement_id');
+            // Foreign keys (optional, if you have these tables)
+            $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
             // Form fields
             $table->string('relation_affaire')->nullable(); // frequency of operations
             $table->string('horizon_placement')->nullable(); // investment horizon

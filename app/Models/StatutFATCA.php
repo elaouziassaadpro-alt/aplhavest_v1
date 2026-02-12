@@ -12,7 +12,7 @@ class StatutFatca extends Model
     protected $table = 'statut_f_a_t_c_a_s';
 
     protected $fillable = [
-    'info_generales_id',   // <- corrige ici
+    'etablissement_id',  
     'usEntity',
     'fichier_usEntity',
     'giin',

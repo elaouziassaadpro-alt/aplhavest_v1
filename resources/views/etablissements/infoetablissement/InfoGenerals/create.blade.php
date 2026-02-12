@@ -37,7 +37,7 @@
         @csrf
 
         <!-- ===================== MAIN CARD ===================== -->
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 mt-4 p-4">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4 ">
 
             <!-- Card header -->
             <div class="px-6 py-4 border-b bg-gray-50 rounded-top">
@@ -50,7 +50,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label>Raison sociale</label>
-                        <input type="text" class="form-control" name="raisonSocial" placeholder="Ex: Société ABC SARL" required>
+                        <input type="text" class="form-control" name="raisonSocial" placeholder="Ex: Société ABC SARL"required >
                     </div>
 
                     <div class="col-md-2 mb-3">
@@ -67,13 +67,13 @@
                                     <li data-value="{{ $forme->id }}">{{ $forme->libelle }}</li>
                                 @endforeach
                             </ul>
-                            <input type="hidden" id="formeSelect" name="FormeJuridique" required>
+                            <input type="hidden" id="formeSelect" name="FormeJuridique" >
                         </div>
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label>Date d'immatriculation</label>
-                        <input type="date" class="form-control" name="dateImmatriculation" required>
+                        <input type="date" class="form-control" name="dateImmatriculation" >
                     </div>
                 </div>
 
@@ -81,12 +81,12 @@
                 <div class="row">
                     <div class="col-md-2 mb-3">
                         <label>ICE</label>
-                        <input type="text" class="form-control" name="ice" placeholder="Identifiant Commun de l’Entreprise" required>
+                        <input type="text" class="form-control" name="ice" placeholder="Identifiant Commun de l’Entreprise" >
                     </div>
                     <div class="col-md-1 mb-3 d-flex align-items-end">
-                        <label class="btn btn-primary w-100 mb-0">
+                        <label class=" btn btn-primary w-100 mb-0">
                             <i class="ti ti-upload"></i> ICE
-                            <input type="file" name="ice_file" hidden accept=".pdf,.jpg,.png">
+                            <input type="file" name="ice_file" hidden accept=".pdf,.jpg,.png" >
                         </label>
                     </div>
 
@@ -110,7 +110,7 @@
 
                     <div class="col-md-4 mb-3">
                         <label>IF</label>
-                        <input type="text" class="form-control" name="ifiscal" placeholder="Identifiant fiscal" required>
+                        <input type="text" class="form-control" name="ifiscal" placeholder="Identifiant fiscal" >
                     </div>
                 </div>
 
@@ -118,7 +118,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label>Siège social</label>
-                        <input type="text" class="form-control" name="siegeSocial" placeholder="Adresse complète" required>
+                        <input type="text" class="form-control" name="siegeSocial" placeholder="Adresse complète" >
                     </div>
 
                     <div class="col-md-4 mb-3">
@@ -130,7 +130,7 @@
                                     <li data-value="{{ $pay->id }}">{{ $pay->libelle }}</li>
                                 @endforeach
                             </ul>
-                            <input type="hidden" id="formeSelectpayact" name="paysActivite" required>
+                            <input type="hidden" id="formeSelectpayact" name="paysActivite" >
                         </div>
                     </div>
 
@@ -143,7 +143,7 @@
                                     <li data-value="{{ $pay->id }}">{{ $pay->libelle }}</li>
                                 @endforeach
                             </ul>
-                            <input type="hidden" id="formeSelectpayresidence" name="paysResidence" required>
+                            <input type="hidden" id="formeSelectpayresidence" name="paysResidence" >
                         </div>
                     </div>
                 </div>
@@ -163,81 +163,83 @@
 
                     <div class="col-md-3 mb-3">
                         <label>Téléphone</label>
-                        <input type="tel" class="form-control" name="telephone" placeholder="+212 6XX XXX XXX" required>
+                        <input type="tel" class="form-control" name="telephone" placeholder="+212 6XX XXX XXX" >
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label>E-mail</label>
-                        <input type="email" class="form-control" name="email" placeholder="contact@entreprise.com" required>
+                        <input type="email" class="form-control" name="email" placeholder="contact@entreprise.com" >
                     </div>
 
                     <div class="col-md-2 mb-3">
                         <label>Site web</label>
-                        <input type="text   " class="form-control" name="siteweb" placeholder="https://www.site.com">
+                        <input type="text" class="form-control" name="siteweb" placeholder="https://www.site.com">
                     </div>
                 </div>
+
                 <!-- ===================== ROW 5: Société de gestion ===================== -->
-                <div class="row align-items-end">
+                    <div class="row align-items-end">
 
-                    <!-- Société de gestion toggle -->
-                    <div class="col-md-2 mb-3">
-                        <label>Société gestion</label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input"
-                                type="checkbox"
-                                id="Societe_gestion_check"
-                                name="societe_gestion"
-                                value="1">
+                        <!-- Société de gestion toggle -->
+                        <div class="col-md-2 mb-3">
+                            <label>Société gestion</label>
+                            <div class="form-check form-switch">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="Societe_gestion_check"
+                                    name="societe_gestion"
+                                    value="1"
+                                >
+                                <label class="form-check-label">
+                                    <span id="Societe_gestionLabel">Non</span>
+                                </label>
+                            </div>
+                        </div>
 
-                            <label class="form-check-label">
-                                <span id="Societe_gestionLabel">Non</span>
-                            </label>
+                        <!-- File upload buttons -->
+                        <div
+                            id="societeGestionFiles"
+                            class="row mt-3 d-none"
+                        >
+                            <div class="col-md-3 mb-3 d-flex align-items-end">
+                                <label class="btn btn-primary w-100 mb-0">
+                                    <i class="ti ti-upload"></i> Agrément
+                                    <input type="file" name="agrement_file" hidden accept=".pdf,.jpg,.png">
+                                </label>
+                            </div>
+
+                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                                <label class="btn btn-primary w-100 mb-0">
+                                    <i class="ti ti-upload"></i> NI
+                                    <input type="file" name="NI" hidden accept=".pdf,.jpg,.png">
+                                </label>
+                            </div>
+
+                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                                <label class="btn btn-primary w-100 mb-0">
+                                    <i class="ti ti-upload"></i> FS
+                                    <input type="file" name="FS" hidden accept=".pdf,.jpg,.png">
+                                </label>
+                            </div>
+
+                            <div class="col-md-3 mb-3 d-flex align-items-end">
+                                <label class="btn btn-primary w-100 mb-0">
+                                    <i class="ti ti-upload"></i> RG
+                                    <input type="file" name="RG" hidden accept=".pdf,.jpg,.png">
+                                </label>
+                            </div>
                         </div>
                     </div>
-
-
-                    <!-- File upload buttons -->
-                    <div id="societeGestionFiles"
-                        class="row mt-3"
-                        style="display:none; opacity:0; transition: all 0.3s ease;">
-
-                        <div class="col-md-3 mb-3 d-flex align-items-end">
-                            <label class="btn btn-primary w-100 mb-0">
-                                <i class="ti ti-upload"></i> Agrément
-                                <input type="file" name="agrement_file" hidden accept=".pdf,.jpg,.png">
-                            </label>
-                        </div>
-
-                        <div class="col-md-2 mb-3 d-flex align-items-end">
-                            <label class="btn btn-primary w-100 mb-0">
-                                <i class="ti ti-upload"></i> NI
-                                <input type="file" name="NI" hidden accept=".pdf,.jpg,.png">
-                            </label>
-                        </div>
-
-                        <div class="col-md-2 mb-3 d-flex align-items-end">
-                            <label class="btn btn-primary w-100 mb-0">
-                                <i class="ti ti-upload"></i> FS
-                                <input type="file" name="FS" hidden accept=".pdf,.jpg,.png">
-                            </label>
-                        </div>
-
-                        <div class="col-md-3 mb-3 d-flex align-items-end">
-                            <label class="btn btn-primary w-100 mb-0">
-                                <i class="ti ti-upload"></i> RG
-                                <input type="file" name="RG" hidden accept=".pdf,.jpg,.png">
-                            </label>
-                        </div>
-                    </div>
-
-
-
                 <!-- ===================== CONTACTS ===================== -->
                 <div class="mt-4">
                     <h5>Contacts</h5>
-                    <a href="#" class="btn btn-light-info btn-sm mb-2" id="addContactRowBtn">Ajouter un contact</a>
+                    <button type="button" class="btn btn-light-info btn-sm mb-2" id="addContactRowBtn" onclick="ajoutercontact()">
+                        Ajouter un contact
+                    </button>
                     <div class="contactsRows"></div>
                 </div>
+
 
             </div>
         </div>
@@ -254,5 +256,6 @@
         </div>
 
     </form>
+
 
 @endsection

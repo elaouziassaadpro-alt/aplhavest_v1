@@ -17,13 +17,13 @@
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-2">Establishment</h4>
+                    <h4 class="fw-semibold mb-2">Establishment : {{ $etablissement->id }}</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
                                 <a class="text-muted text-decoration-none" href="{{ url('/') }}">Dashboard</a>
                             </li>
-                            <li class="breadcrumb-item active">Nouvel Établissement {{ $secteurs[0]->libelle }} </li>
+                            <li class="breadcrumb-item active">Nouvel Établissement  </li>
                         </ol>
                         
                     </nav>
@@ -38,10 +38,10 @@
     <!-- ===================== FORM ===================== -->
     <form action="{{ route('typologie.store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="info_generales_id" value="{{ $info_generales_id }}">
+        <input type="hidden" name="etablissement_id" value="{{ $etablissement->id }}">
 
         <!-- ===================== MAIN CARD ===================== -->
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 mt-4 p-4">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4">
 
             <!-- Card header -->
             <div class="px-6 py-4 border-b bg-gray-50 rounded-top">

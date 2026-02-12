@@ -10,13 +10,13 @@
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-2">Establishment</h4>
+                    <h4 class="fw-semibold mb-2">Establishment : {{ $etablissement->name }}</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item">
                                 <a class="text-muted text-decoration-none" href="{{ url('/') }}">Dashboard</a>
                             </li>
-                            <li class="breadcrumb-item active">Situation Financière Patrimoniale{{ $info_generales_id }}</li>
+                            <li class="breadcrumb-item active">Actionnaires</li>
                         </ol>
                     </nav>
                 </div>
@@ -30,9 +30,10 @@
     <!-- ===================== FORM ===================== -->
     <form action="{{ route('actionnariat.store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="info_generales_id" value="{{ $info_generales_id }}">
+        <input type="hidden" name="redirect_to" value="{{ request('redirect_to') }}">
+        <input type="hidden" name="etablissement_id" value="{{ $etablissement->id }}">
 
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 mt-4 p-6">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4 ">
 
             <!-- Card header -->
             <div class="px-6 py-4 border-b bg-gray-50 rounded-t-xl">
@@ -40,6 +41,37 @@
             </div>
 
             <!-- Card body -->
+            <div class="mt-4 px-6">
+                @if($etablissement->Actionnaire && $etablissement->Actionnaire->count())
+                    <h5 class="fw-semibold mb-3">Actionnaires existants :</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Nom / Raison sociale</th>
+                                    <th>Prénom</th>
+                                    <th>Identité / RC</th>
+                                    <th>Nombre de titres</th>
+                                    <th>% Capital</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($etablissement->Actionnaire as $exist)
+                                    <tr>
+                                        <td>{{ $exist->nom_rs }}</td>
+                                        <td>{{ $exist->prenom ?? '—' }}</td>
+                                        <td>{{ $exist->identite ?? '—' }}</td>
+                                        <td>{{ $exist->nombre_titres ?? '—' }}</td>
+                                        <td>{{ $exist->pourcentage_capital ? $exist->pourcentage_capital . '%' : '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr class="mb-4">
+                @endif
+            </div>
+
             <div class="mt-4"></div>
                 <div class="actionnairesRows">
 
@@ -55,11 +87,7 @@
               
 
             </div>
-        </div>
-    
-
-<!-- ===================== SAVE BUTTON ===================== -->
-        <div class="text-center mt-4">
+            <div class="text-center mt-4">
             <button type="submit" class="btn btn-save d-flex align-items-center justify-content-center mx-auto">
                 <svg class="w-6 h-6 me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -69,5 +97,10 @@
             </button>
         </div>
 </form>
+        </div>
+    
+
+<!-- ===================== SAVE BUTTON ===================== -->
+        
 
 @endsection

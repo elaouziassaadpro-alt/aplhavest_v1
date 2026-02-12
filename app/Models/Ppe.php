@@ -14,4 +14,17 @@ class Ppe extends Model
     protected $fillable = [
         'libelle',
     ];
+    public function beneficiaires()
+    {
+        return $this->hasMany(BenificiaireEffectif::class, 'ppe_id');
+    }
+
+    public function beneficiairesLien()
+    {
+        return $this->hasMany(BenificiaireEffectif::class, 'ppe_lien_id');
+    }
+    public function Administrateur()
+{
+    return $this->hasOne(Administrateur::class);
+}
 }

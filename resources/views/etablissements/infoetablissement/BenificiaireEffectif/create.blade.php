@@ -5,45 +5,14 @@
 
 
 <script>
-    window.dropdownData = {
-        ppesArray: [] // will be filled by AJAX
+    window.APP_DATA = {
+        ppes: @json($ppes),
+        pays: @json($pays)
     };
 </script>
-
 <script src="{{ asset('dist/js/pages/benificiaireeffectif.js') }}"></script>
 <style>
-  .custom-select-wrapper {
-    position: relative;
-}
-
-.custom-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: none; /* Hidden by default */
-    background: white;
-    border: 1px solid #ddd;
-    max-height: 200px;
-    overflow-y: auto;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.custom-dropdown.show {
-    display: block; /* Shown when class is added via JS */
-}
-
-.custom-dropdown li {
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-.custom-dropdown li:hover {
-    background-color: #f8f9fa;
-}
+  
 </style>
 
 <div class="container-fluid mw-100">
@@ -53,14 +22,14 @@
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-2">Establishment</h4>
+                    <h4 class="fw-semibold mb-2">Establishment : {{ $etablissement->name }}</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item">
                                 <a class="text-muted text-decoration-none" href="{{ url('/') }}">Dashboard</a>
                             </li>
                             <li class="breadcrumb-item active">
-                                Bénéficiaire effectif #{{ $info_generales_id }}{{ $ppes[0]->libelle }}
+                                Bénéficiaire effectif 
                             </li>
                         </ol>
                     </nav>
@@ -75,32 +44,40 @@
     <!-- ===================== FORM ===================== -->
     <form action="{{ route('benificiaireeffectif.store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="info_generales_id" value="{{ $info_generales_id }}">
+        <input type="hidden" name="redirect_to" value="{{ request('redirect_to') }}">
+        <input type="hidden" name="etablissement_id" value="{{ $etablissement->id }}">
 
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 mt-4 p-6">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4 ">
 
             <!-- Card header -->
             <div class="px-6 py-4 border-b bg-gray-50 rounded-t-xl">
                 <h2 class="text-xl font-semibold text-gray-800">Bénéficiaires Effectif</h2>
             </div>
 
-            <!-- Card body -->
+
+            
+
             <div class="mt-4">
 
-                <!-- Bénéficiaires -->
-                <div class="benificiairesRows mb-4">
-                </div>        
+        <div class="benificiairesRows"></div>
 
-                <div class="row addBenificiaireRow">
-                    <div class="col-md-2">
-                        <a href="#" class="btn btn-light-info mt-3" id="addBenificiaireRowBtn">Ajouter un bénéficiaire</a>
-                    </div>
-                </div>
+        <!-- Bouton ajout -->
+        <div class="mt-3">
+            <button type="button" 
+                    class="btn btn-light-info" 
+                    id="addBenificiaireRowBtn">
+                <i class="ti ti-plus me-1"></i>
+                Ajouter un bénéficiaire
+            </button>
+        </div>
 
             </div>
         </div>
 
-        <!-- ===================== SAVE BUTTON ===================== -->
+        
+
+</div>
+<!-- ===================== SAVE BUTTON ===================== -->
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-save d-flex align-items-center justify-content-center mx-auto">
                 <svg class="w-6 h-6 me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
@@ -111,6 +88,4 @@
             </button>
         </div>
     </form>
-
-</div>
 @endsection

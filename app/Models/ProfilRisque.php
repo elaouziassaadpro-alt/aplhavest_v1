@@ -12,6 +12,7 @@ class ProfilRisque extends Model
     protected $table = 'profil_risques';
 
     protected $fillable = [
+        'etablissement_id',
         'departement_en_charge_check',
         'departement_gestion_input',
         'instruments_souhaites_input',
@@ -22,7 +23,10 @@ class ProfilRisque extends Model
 
     // Cast JSON column to array
     protected $casts = [
-        'instruments_souhaites_input' => 'array',
         'departement_en_charge_check' => 'boolean',
     ];
+    public function etablissement()
+    {
+        return $this->belongsTo(Etablissement::class, 'etablissement_id');
+    }
 }

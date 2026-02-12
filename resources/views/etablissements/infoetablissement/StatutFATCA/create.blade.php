@@ -10,7 +10,7 @@
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-2">Establishment</h4>
+                    <h4 class="fw-semibold mb-2">Establishment : {{ $etablissement->name }}</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item">
@@ -29,13 +29,13 @@
     <!-- ===================== FORM ===================== -->
     <form action="{{ route('statutfatca.store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="info_generales_id" value="{{ $info_generales_id  }}">
+        <input type="hidden" name="etablissement_id" value="{{ $etablissement->id }}">
 
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 mt-4 p-6">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4 ">
 
             <!-- Card header -->
             <div class="px-6 py-4 border-b bg-gray-50 rounded-t-xl">
-                <h2 class="text-xl font-semibold text-gray-800">Typologie Client</h2>
+                <h2 class="text-xl font-semibold text-gray-800">Statut FATCA</h2>
             </div>
 
             <!-- Card body -->

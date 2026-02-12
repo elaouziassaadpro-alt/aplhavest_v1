@@ -8,7 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -24,6 +25,25 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // ✅ FIRST INSTALL : create admin if no users
+    if (User::count() === 0) {
+
+        if (
+            $request->input('email') === 'admin@admin.com' &&
+            $request->input('password') === 'admin'
+        ) {
+            $admin = User::create([ 
+                'name' => 'Administrator',
+                'email' => 'admin@admin.com',
+                'password' => Hash::make('admin'),
+            ]);
+
+            Auth::login($admin);
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('dashboard'));
+        }
+    }
         $request->authenticate();
 
         $request->session()->regenerate();

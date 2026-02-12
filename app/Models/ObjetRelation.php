@@ -12,7 +12,7 @@ class ObjetRelation extends Model
     protected $table = 'objet_relations';
 
     protected $fillable = [
-        'info_general_id',
+        'etablissement_id',
         'relation_affaire',
         'horizon_placement',
         'objet_relation',
@@ -30,8 +30,8 @@ class ObjetRelation extends Model
     ];
 
     // Relation to establishment
-    public function infoGeneral()
+    public function etablissement()
     {
-        return $this->belongsTo(InfoGeneral::class, 'info_general_id');
+        return $this->belongsTo(Etablissement::class, 'etablissement_id');
     }
 }

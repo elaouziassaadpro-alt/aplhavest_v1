@@ -10,33 +10,45 @@ return new class extends Migration
     {
         Schema::create('administrateurs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('info_generales_id'); // FK to infos_generales
+            $table->unsignedBigInteger('etablissement_id');
+            // Foreign keys (optional, if you have these tables)
+            $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
 
             $table->string('nom', 200)->nullable();
-            $table->string('pays', 100)->nullable();
+            $table->string('prenom', 200)->nullable();
+            $table->unsignedBigInteger('pays_id')->nullable(); // FK vers pays
             $table->date('date_naissance')->nullable();
             $table->string('identite', 100)->nullable();
-            $table->string('nationalite', 100)->nullable();
+            $table->unsignedBigInteger('nationalite_id')->nullable(); // FK vers pays
             $table->string('fonction', 150)->nullable();
 
             // PPE fields
-            $table->boolean('ppe')->default(0);             // checkbox
-            $table->unsignedBigInteger('libelle_ppe')->nullable(); // FK to ppes table
-            $table->boolean('ppe_lien')->default(0);       // checkbox
-            $table->unsignedBigInteger('libelle_ppe_lien')->nullable(); // FK to ppes table
+            $table->boolean('ppe')->default(0);                   // checkbox
+            $table->unsignedBigInteger('ppe_id')->nullable();     // FK vers ppes
+            $table->boolean('lien_ppe')->default(0);             // checkbox
+            $table->unsignedBigInteger('lien_ppe_id')->nullable(); // FK vers ppes
+
+            // Fichiers
+            $table->string('cin_file')->nullable();
+            $table->string('pvn_file')->nullable();
 
             $table->timestamps();
 
-            // Foreign keys
-            $table->foreign('info_generales_id')
-                  ->references('id')->on('info_generales')
-                  ->onDelete('cascade');
+            
 
-            $table->foreign('libelle_ppe')
+            $table->foreign('pays_id')
+                  ->references('id')->on('pays')
+                  ->onDelete('set null');
+
+            $table->foreign('nationalite_id')
+                  ->references('id')->on('pays')
+                  ->onDelete('set null');
+
+            $table->foreign('ppe_id')
                   ->references('id')->on('ppes')
                   ->onDelete('set null');
 
-            $table->foreign('libelle_ppe_lien')
+            $table->foreign('lien_ppe_id')
                   ->references('id')->on('ppes')
                   ->onDelete('set null');
         });

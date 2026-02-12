@@ -3,37 +3,47 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\NiveauRisqueTrait;   
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 class PersonnesHabilites extends Model
 
 {
-    use HasFactory;
+    use HasFactory,NiveauRisqueTrait;
 
-    protected $table = 'habilites';
+    protected $table = 'personnes_habilites';
 
     protected $fillable = [
-        'nom',
+        'etablissement_id',
+        'nom_rs',
         'prenom',
-        'cinPasseport',
+        'identite',
         'fonction',
-        'nationalite',
         'ppe',
-        'lienPPE',
-        'fichier_cin_file',
+        'libelle_ppe',
+        'cin_file',
         'fichier_habilitation_file',
-        'info_general_id',
-        'ppe2',
-        'lien2',
+        'lien_ppe',
+        'libelle_ppe_lien',
     ];
 
     // Relationships
-    public function pays()
-    {
-        return $this->belongsTo(Pays::class, 'nationalite');
-    }
 
     public function etablissement()
     {
-        return $this->belongsTo(InfoGeneral::class, 'info_general_id');
+        return $this->belongsTo(Etablissement::class, 'etablissement_id');
+    }
+    
+    public function ppeRelation()
+{
+    return $this->belongsTo(Ppe::class, 'libelle_ppe');
+}
+
+    public function lienPpeRelation()
+{
+    return $this->belongsTo(Ppe::class, 'libelle_ppe_lien');
+}
+public function checkRisk()
+    {
+        return $this->niveauRisqueAuto();
     }
 }

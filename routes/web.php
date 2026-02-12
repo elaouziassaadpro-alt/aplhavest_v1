@@ -15,55 +15,131 @@ use App\Http\Controllers\AdministrateursController;
 use App\Http\Controllers\PersonnesHabilitesController;
 use App\Http\Controllers\ObjetRelationController;
 use App\Http\Controllers\ProfilRisqueController;
+use App\Http\Controllers\RatingEtablissementController;
 
+// Dashboard
+Route::get('/', [Dashboard::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-
-
-Route::get('/', [Dashboard::class,'index' ])->middleware(['auth', 'verified'])->name('dashboard');
-
+// Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('etablissements',[EtablissementController::class,'index'])->name('etablissements.index');
-//create etablissement
-//create infogeneral
-Route::get('etablissements/create/infogeneral/create',[InfoGeneralController::class,'create'])->name('infogeneral.create');
-Route::post('etablissements/create/infogeneral/store',[InfoGeneralController::class,'store'])->name('infogeneral.store');
-//create coordonneesbancaires
-Route::get('etablissements/create/coordonneesbancaires/create',[CoordonneesBancairesController::class,'create'])->name('coordonneesbancaires.create');
-Route::post('etablissements/create/coordonneesbancaires/store',[CoordonneesBancairesController::class,'store'])->name('coordonneesbancaires.store');
-//create typologies
-Route::get('etablissements/create/Typologie/create',[TypologieClientController::class,'create'])->name('typologie.create');
-Route::post('etablissements/create/Typologie/store',[TypologieClientController::class,'store'])->name('typologie.store');
-//create StatutFATCA
+// Etablissements
+Route::prefix('etablissements')->group(function () {
 
-Route::get('etablissements/create/statutfatca/create',[StatutFATCAController::class,'create'])->name('statutfatca.create');
-Route::post('etablissements/create/statutfatca/store',[StatutFATCAController::class,'store'])->name('statutfatca.store');
-//create Situation financière et patrimoniale
-Route::get('etablissements/create/situationfinanciere/create',[SituationFinanciereController::class,'create'])->name('situationfinanciere.create');
-Route::post('etablissements/create/situationfinanciere/store',[SituationFinanciereController::class,'store'])->name('situationfinanciere.store');
-// create Actionnariat
-Route::get('etablissements/create/actionnariat/create',[ActionnariatController::class,'create'])->name('actionnariat.create');
-Route::post('etablissements/create/actionnariat/store',[ActionnariatController::class,'store'])->name('actionnariat.store');
-// create Benificiaire Effectif
-Route::get('etablissements/create/benificiaireeffectif/create',[BenificiaireEffectifController::class,'create'])->name('benificiaireeffectif.create');
-Route::post('etablissements/create/benificiaireeffectif/store',[BenificiaireEffectifController::class,'store'])->name('benificiaireeffectif.store');
-// create Administrateurs
-Route::get('etablissements/create/administrateurs/create',[AdministrateursController::class,'create'])->name('administrateurs.create');
-Route::post('etablissements/create/administrateurs/store',[AdministrateursController::class,'store'])->name('administrateurs.store');
-// create PersonnesHabilites
-Route::get('etablissements/create/personneshabilites/create',[PersonnesHabilitesController::class,'create'])->name('personneshabilites.create');
-Route::post('etablissements/create/personneshabilites/store',[PersonnesHabilitesController::class,'store'])->name('personneshabilites.store');
-// create ObjetRelation
-Route::get('etablissements/create/objetrelation/create',[ObjetRelationController::class,'create'])->name('objetrelation.create');
-Route::post('etablissements/create/objetrelation/store',[ObjetRelationController::class,'store'])->name('objetrelation.store');
-// create profilRisque
-Route::get('etablissements/create/profilrisque/create',[ProfilRisqueController::class,'create'])->name('profilrisque.create');
-Route::post('etablissements/create/profilrisque/store',[ProfilRisqueController::class,'store'])->name('profilrisque.store');
+    Route::get('/', [EtablissementController::class,'index'])->name('etablissements.index');
+    Route::get('/{etablissement}', [EtablissementController::class, 'show'])->name('etablissements.show');
+    Route::post('etablissements/destroy-multiple', [EtablissementController::class, 'destroyMultiple'])->name('etablissements.destroy-multiple');
 
-#infogeneral
+
+
+    // Validation update
+    Route::post('/update-validation', [EtablissementController::class, 'updateValidation'])->name('etablissement.update.validation');
+
+    // Info General
+    Route::prefix('create/infogeneral')->group(function () {
+        Route::get('create',[InfoGeneralController::class,'create'])->name('infogeneral.create');
+        Route::post('store',[InfoGeneralController::class,'store'])->name('infogeneral.store');
+        Route::get('contact', [InfoGeneralController::class, 'Contactindex'])->name('contacts.index');
+        Route::post('delete-multiple', [InfoGeneralController::class, 'deleteContact'])->name('contacts.delete-multiple');
+        Route::post('update/{infoGeneral}', [InfoGeneralController::class, 'update'])->name('infoGenerales.update');
+
+
+    });
+
+    // Coordonnees bancaires
+    Route::prefix('create/coordonneesbancaires')->group(function () {
+        Route::get('index',[CoordonneesBancairesController::class,'index'])->name('coordonneesbancaires.index');
+        Route::get('create',[CoordonneesBancairesController::class,'create'])->name('coordonneesbancaires.create');
+        Route::post('store',[CoordonneesBancairesController::class,'store'])->name('coordonneesbancaires.store');
+        Route::post('update/{etablissement}',[CoordonneesBancairesController::class,'update'])->name('coordonneesbancaires.update');
+        Route::post('bulk-delete', [CoordonneesBancairesController::class, 'bulkDelete'])->name('coordonneesbancaires.bulkDelete');
+    });
+
+    // Typologie
+    Route::prefix('create/typologie')->group(function () {
+        Route::get('create',[TypologieClientController::class,'create'])->name('typologie.create');
+        Route::post('store',[TypologieClientController::class,'store'])->name('typologie.store');
+        Route::post('update/{etablissement}',[TypologieClientController::class,'update'])->name('typologie.update');
+    });
+
+    // Statut FATCA
+    Route::prefix('create/statutfatca')->group(function () {
+        Route::get('create',[StatutFATCAController::class,'create'])->name('statutfatca.create');
+        Route::post('store',[StatutFATCAController::class,'store'])->name('statutfatca.store');
+        Route::post('update/{statutFatca}', [StatutFATCAController::class, 'update'])
+    ->name('statutfatca.update');
+    });
+
+    // Situation Financiere
+    Route::prefix('create/situationfinanciere')->group(function () {
+        Route::get('create',[SituationFinanciereController::class,'create'])->name('situationfinanciere.create');
+        Route::post('store',[SituationFinanciereController::class,'store'])->name('situationfinanciere.store');
+        Route::post('update/{etablissement}', [SituationFinanciereController::class, 'update'])->name('situationfinanciere.update');
+
+    });
+
+    // Actionnariat
+    Route::prefix('create/actionnariat')->group(function () {
+        Route::get('create',[ActionnariatController::class,'create'])->name('actionnariat.create');
+        Route::post('store',[ActionnariatController::class,'store'])->name('actionnariat.store');
+        Route::get('index',[ActionnariatController::class,'index'])->name('actionnariat.index');
+        Route::post('/actionnariat/bulk-delete', [ActionnariatController::class, 'bulkDelete'])
+    ->name('actionnariat.bulkDelete');
+        Route::post('update/{etablissement}',[ActionnariatController::class,'update'])->name('actionnariat.update');
+
+
+    });
+
+    // Benificiaire Effectif
+    Route::prefix('create/benificiaireeffectif')->group(function () {
+        Route::get('index',[BenificiaireEffectifController::class,'index'])->name('benificiaireeffectif.index');
+        Route::get('create',[BenificiaireEffectifController::class,'create'])->name('benificiaireeffectif.create');
+        Route::post('store',[BenificiaireEffectifController::class,'store'])->name('benificiaireeffectif.store');
+                Route::post('bulk-delete',[BenificiaireEffectifController::class,'bulkDelete'])->name('beneficiaire.bulkDelete');
+        Route::post('update/{etablissement}',[BenificiaireEffectifController::class,'update'])->name('benificiaireeffectif.update');
+
+    });
+
+    // Administrateurs
+    Route::prefix('create/administrateurs')->group(function () {
+        Route::get('index',[AdministrateursController::class,'index'])->name('administrateurs.index');
+        Route::get('create',[AdministrateursController::class,'create'])->name('administrateurs.create');
+        Route::post('store',[AdministrateursController::class,'store'])->name('administrateurs.store');
+                Route::post('/administrateurs/bulk-delete', [AdministrateursController::class, 'bulkDelete'])->name('administrateurs.bulkDelete');
+        Route::post('update/{etablissement}',[AdministrateursController::class,'update'])->name('administrateurs.update');
+
+    });
+
+    // Personnes Habilites
+    Route::prefix('create/personneshabilites')->group(function () {
+        Route::get('index',[PersonnesHabilitesController::class,'index'])->name('personneshabilites.index');
+        Route::get('create',[PersonnesHabilitesController::class,'create'])->name('personneshabilites.create');
+        Route::post('store',[PersonnesHabilitesController::class,'store'])->name('personneshabilites.store');
+        Route::post('bulk-delete',[PersonnesHabilitesController::class,'bulkDelete'])->name('personneshabilites.bulkDelete');
+        Route::post('update/{etablissement}',[PersonnesHabilitesController::class,'update'])->name('personneshabilites.update');
+
+    });
+
+    // Objet Relation
+    Route::prefix('create/objetrelation')->group(function () {
+        Route::get('create',[ObjetRelationController::class,'create'])->name('objetrelation.create');
+        Route::post('store',[ObjetRelationController::class,'store'])->name('objetrelation.store');
+        Route::post('update/{etablissement}',[ObjetRelationController::class,'update'])->name('objetrelation.update');
+    });
+
+    // Profil Risque
+    Route::prefix('create/profilrisque')->group(function () {
+        Route::get('create',[ProfilRisqueController::class,'create'])->name('profilrisque.create');
+        Route::post('store',[ProfilRisqueController::class,'store'])->name('profilrisque.store');
+        Route::post('update/{etablissement}',[ProfilRisqueController::class,'update'])->name('profilrisque.update');
+    });
+});
+
+// Rating
+Route::get('rating',[RatingEtablissementController::class,'Rating'])->name('Rating');
 
 require __DIR__.'/auth.php';

@@ -13,30 +13,39 @@ return new class extends Migration
     {
         Schema::create('personnes_habilites', function (Blueprint $table) {
             $table->id();
-            $table->string('nom', 200);
-            $table->string('prenom', 200);
-            $table->string('cinPasseport', 100);
-            $table->string('fonction', 200);
 
-            // Foreign key to pays table
-            $table->unsignedBigInteger('nationalite');
-            $table->foreign('nationalite')->references('id')->on('pays');
+            // Relation to Etablissement
+            $table->unsignedBigInteger('etablissement_id');
+            $table->foreign('etablissement_id')
+                  ->references('id')->on('etablissements')
+                  ->cascadeOnDelete();
 
+            // Personal info
+            $table->string('nom_rs', 200)->nullable();
+            $table->string('prenom', 200)->nullable();
+            $table->string('identite', 100)->nullable();
+            $table->string('fonction', 200)->nullable();
+
+            // PPE and PPE link
             $table->boolean('ppe')->default(false);
-            $table->boolean('lienPPE')->default(false);
+            $table->unsignedBigInteger('libelle_ppe')->nullable(); // FK vers table ppes
+            $table->boolean('lien_ppe')->default(false);
+            $table->unsignedBigInteger('libelle_ppe_lien')->nullable(); // FK vers table ppes
 
-            $table->string('fichier_cin_file')->nullable();
+            // Files
+            $table->string('cin_file')->nullable();
             $table->string('fichier_habilitation_file')->nullable();
 
-            // Foreign key to etablissement (info_generales)
-            $table->unsignedBigInteger('idEtablissement');
-            $table->foreign('idEtablissement')->references('id')->on('info_generales')->onDelete('cascade');
+            // Foreign keys to ppes
+            $table->foreign('libelle_ppe')
+                  ->references('id')->on('ppes')
+                  ->nullOnDelete();
 
-            $table->boolean('ppe2')->default(0);
-            $table->boolean('lien2')->default(0);
+            $table->foreign('libelle_ppe_lien')
+                  ->references('id')->on('ppes')
+                  ->nullOnDelete();
 
             $table->timestamps();
-
         });
     }
 

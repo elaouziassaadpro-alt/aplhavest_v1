@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('info_generales', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('etablissement_id');
+            // Foreign keys (optional, if you have these tables)
+            $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
             $table->string('raisonSocial', 200)->nullable();
             $table->decimal('capitalSocialPrimaire', 15, 2)->default(0);
             $table->unsignedBigInteger('FormeJuridique')->nullable();
@@ -39,7 +42,7 @@ return new class extends Migration
             $table->string('FS')->nullable();
             $table->string('RG')->nullable();
             $table->timestamps();
-            // Foreign keys (optional, if you have these tables)
+            
             $table->foreign('paysActivite')->references('id')->on('pays')->nullOnDelete();
             $table->foreign('paysResidence')->references('id')->on('pays')->nullOnDelete();
             $table->foreign('FormeJuridique')->references('id')->on('formes_juridiques')->nullOnDelete();

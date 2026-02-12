@@ -18,6 +18,6 @@ class Segments extends Model
     ];
     public function TypologieClient()
     {
-        return $this->hasMany(TypologieClient::class, 'segment_id');
+        return $this->hasMany(TypologieClient::class, 'segment');
     }
 }

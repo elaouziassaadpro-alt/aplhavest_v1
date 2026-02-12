@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\NiveauRisqueTrait; // ✅ correct import
 
 class Actionnariat extends Model
 {
-    use HasFactory;
+    use HasFactory,NiveauRisqueTrait;
 
     protected $table = 'actionnariat';
 
     protected $fillable = [
-        'info_generales_id',
+        'etablissement_id',
         'nom_rs',
         'prenom',
         'identite',
@@ -21,10 +22,14 @@ class Actionnariat extends Model
     ];
 
     // Relation to InfosGenerales
-    public function infoGenerale()
+    public function etablissement()
     {
-        return $this->belongsTo(InfoGeneral::class, 'info_generales_id');
+        return $this->belongsTo(Etablissement::class, 'etablissement_id');
     }
-
-
+    
+    
+public function checkRisk()
+    {
+        return $this->checkidentity();
+    }
 }

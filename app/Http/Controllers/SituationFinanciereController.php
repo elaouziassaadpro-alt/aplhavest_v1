@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\SituationFinanciere;
 use App\Models\Pays;
+use App\Models\InfoGeneral;
+use App\Models\Etablissement;
+use Illuminate\Support\Facades\Storage;
+
+
 
 use Illuminate\Http\Request;
 
@@ -22,10 +27,11 @@ class SituationFinanciereController extends Controller
      */
     public function create(Request $request)
     {
-     $info_generales_id = $request->info_generales_id;
+     $etablissement_id = $request->etablissement_id;
+        $etablissement = Etablissement::find($etablissement_id);
      $pays = Pays::all();
 
-        return view("etablissements.infoetablissement.SituationFinanciere.create", compact('info_generales_id', 'pays'));
+        return view("etablissements.infoetablissement.SituationFinanciere.create", compact('etablissement', 'pays'));
     }
 
 
@@ -39,7 +45,7 @@ class SituationFinanciereController extends Controller
 
         // ✅ Validation (important)
         $request->validate([
-            'info_generales_id' => 'required|integer',
+            'etablissement_id' => 'required|integer',
             'capital_social'    => 'nullable|string',
             'origine_fonds'     => 'nullable|string',
             'paysResidence'     => 'required|integer',
@@ -61,7 +67,7 @@ class SituationFinanciereController extends Controller
         }
         // ✅ Save to DB
         SituationFinanciere::create([
-            'info_generales_id' => $request->info_generales_id,
+            'etablissement_id' => $request->etablissement_id,
             'capitalSocial'     => $capitalSocial,
             'origineFonds'      => $request->origine_fonds,
             'paysOrigineFonds'  => $request->paysResidence,
@@ -70,8 +76,18 @@ class SituationFinanciereController extends Controller
             'holding'           => $request->groupe_holding,
             'etat_synthese'     => $etatSynthesePath,
         ]);
+        $etablissement = Etablissement::findOrFail($request->etablissement_id);
 
-        return redirect()->route('actionnariat.create',['info_generales_id' => $request->info_generales_id])->with('success', 'Situation financière enregistrée avec succès.');
+        
+
+        if ($etablissement->fresh()->isCompleted()) {
+            return redirect()->route('Rating', [
+                    'etablissement_id' => $etablissement->id
+                ]);
+
+        }
+
+        return redirect()->route('actionnariat.create',['etablissement_id' => $request->etablissement_id])->with('success', 'Situation financière enregistrée avec succès.');
     }
 
     // ✅ Helper function
@@ -98,10 +114,37 @@ class SituationFinanciereController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, SituationFinanciere $situationFinanciere)
-    {
-        //
+    public function update(Request $request, Etablissement $etablissement)
+{
+    $situationFinanciere = $etablissement->situationFinanciere;
+
+    $data = $request->validate([
+        'capitalSocial'       => 'nullable|string|max:255',
+        'origineFonds'        => 'nullable|string|max:255',
+        'paysOrigineFonds'    => 'nullable|exists:pays,id',
+        'chiffreAffaires'     => 'nullable|string|max:50',
+        'resultatsNET'        => 'nullable|string|max:255',
+        'holding'             => 'nullable|boolean',
+        'etat_synthese'       => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+    ]);
+
+    // Remove spaces or commas before saving numeric values
+    $data['capitalSocial'] = isset($data['capitalSocial']) ? str_replace([' ', ','], '', $data['capitalSocial']) : null;
+    $data['resultatsNET'] = isset($data['resultatsNET']) ? str_replace([' ', ','], '', $data['resultatsNET']) : null;
+
+    // Upload fichier états de synthèse
+    if ($request->hasFile('etat_synthese')) {
+        if ($situationFinanciere->etat_synthese) {
+            Storage::disk('public')->delete($situationFinanciere->etat_synthese);
+        }
+        $data['etat_synthese'] = $request->file('etat_synthese')->store('situation_financiere', 'public');
     }
+
+    $situationFinanciere->update($data);
+
+    return back()->with('success', 'Situation financière mise à jour avec succès.');
+}
+
 
     /**
      * Remove the specified resource from storage.

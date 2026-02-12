@@ -13,7 +13,9 @@ return new class extends Migration
 {
     Schema::create('coordonnees_bancaires', function (Blueprint $table) {
         $table->id();
-        $table->unsignedBigInteger('info_generales_id')->nullable();
+        $table->unsignedBigInteger('etablissement_id');
+            // Foreign keys (optional, if you have these tables)
+        $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
         $table->unsignedBigInteger('banque_id')->nullable();
         $table->string('agences_banque')->nullable();
         $table->unsignedBigInteger('ville_id')->nullable();
@@ -22,7 +24,6 @@ return new class extends Migration
         $table->timestamps();
         $table->foreign('banque_id')->references('id')->on('banques');
         $table->foreign('ville_id')->references('id')->on('villes');
-        $table->foreign('info_generales_id')->references('id')->on('info_generales')->onDelete('cascade');
 
     });
 }

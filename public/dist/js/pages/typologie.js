@@ -101,8 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Activité à l'étranger
     toggleSwitchWithInput({
         checkboxId: 'activite_etranger_check',
-        labelId: 'activiteEtrangerLabel',
-        wrapperId: 'paysInputWrapper'
+        labelId: 'activite_etranger_label',
+        wrapperId: 'pays_etranger_wrapper'
     });
 
     // Marché financier / appel public

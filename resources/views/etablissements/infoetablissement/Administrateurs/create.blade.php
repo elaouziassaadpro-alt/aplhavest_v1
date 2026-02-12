@@ -1,30 +1,102 @@
-<p>
-              <a
-                class="btn btn-light-info w-100 font-medium text-info"
-                data-bs-toggle="collapse"
-                href="#administrateursDirigeants"
-                role="button"
-                aria-expanded="false"
-                aria-controls="administrateursDirigeants"
-              >
-                Administrateurs / Dirigeants
-              </a>
+@extends('layouts.app')
 
-            <div class="collapse" id="administrateursDirigeants">
-              <div class="card card-body">
-               
-                <div class="administrateursRows">
-                  <h5>Administrateurs / Dirigeants</h5>
-                </div>        
+@section('content')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-                <div class="row addAdministrateurRow">
-                  <div class="col-md-3">
-                    <a href="#" class="btn btn-light-info" style="margin-top: 10px;" id="addAdministrateurRowBtn">Ajouter un Administrateur ou Dirigeant</a>
-                  </div>
-                  
+<script>
+    window.APP_DATA = {
+        ppes: @json($ppes),
+        pays: @json($pays)
+    };
+</script>
+<script src="{{ asset('dist/js/pages/Administrateur.js') }}"></script>
+
+<div class="container-fluid mw-100">
+
+    <!-- Breadcrumb -->
+    <div class="card bg-light-info shadow-none position-relative overflow-hidden mb-4">
+        <div class="card-body px-4 py-3">
+            <div class="row align-items-center">
+                <div class="col-9">
+                    <h4 class="fw-semibold mb-2">Establishment : {{ $etablissement->name }}</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a class="text-muted text-decoration-none" href="{{ url('/') }}">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item active">Administrateur / Dirigeant</li>
+                        </ol>
+                    </nav>
                 </div>
-
-
-              </div>
+                <div class="col-3 text-center">
+                    <img src="{{ asset('dist/images/breadcrumb/ChatBc.png') }}" class="img-fluid" alt="Breadcrumb image">
+                </div>
             </div>
-        </p>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form action="{{ route('administrateurs.store') }}" method="post" enctype="multipart/form-data">
+        @csrf
+        <input type="hidden" name="redirect_to" value="{{ request('redirect_to') }}">
+<input type="hidden" name="etablissement_id" value="{{ $etablissement->id }}">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4 ">
+            <h2 class="text-xl font-semibold text-gray-800">Administrateur ou Dirigeant </h2>
+            
+            <div class="mt-4 px-6">
+                @if($etablissement->Administrateur && $etablissement->Administrateur->count())
+                    <h5 class="fw-semibold mb-3">Administrateurs existants :</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Identité / Passport</th>
+                                    <th>Nationalité</th>
+                                    <th>Fonction</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($etablissement->Administrateur as $exist)
+                                    <tr>
+                                        <td>{{ $exist->nom }}</td>
+                                        <td>{{ $exist->prenom ?? '—' }}</td>
+                                        <td>{{ $exist->identite ?? '—' }}</td>
+                                        <td>{{ $exist->nationalite->libelle ?? '—' }}</td>
+                                        <td>{{ $exist->fonction ?? '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr class="mb-4">
+                @endif
+            </div>
+            <div class="administrateursRows"></div>
+            <div class="row addAdministrateurRow">
+                <div class="mt-3">
+            <button type="button" 
+                    class="btn btn-light-info" 
+                    id="addAdministrateurRowBtn">
+                <i class="ti ti-plus me-1"></i>
+                Ajouter un bénéficiaire
+            </button>
+        </div>
+            </div>
+
+            
+        </div>
+</div>
+<!-- Save Button -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-save d-flex align-items-center justify-content-center mx-auto">
+                    <svg class="w-6 h-6 me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"/>
+                    </svg>
+                    Save
+                </button>
+            </div>
+    </form>
+@endsection

@@ -17,6 +17,10 @@
     <!-- Core CSS -->
     <link id="themeColors" rel="stylesheet" href="{{ asset('dist/css/style.min.css') }}" />
     <link id="themeColors" rel="stylesheet" href="{{ asset('dist/css/css_file_custom.css') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+  
+
   </head>
 
   <body>

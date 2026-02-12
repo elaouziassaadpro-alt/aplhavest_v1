@@ -12,77 +12,59 @@ class InfoGeneral extends Model
     protected $table = 'info_generales';
 
     protected $fillable = [
-        'raisonSocial',
-        'capitalSocialPrimaire',
-        'FormeJuridique',
-        'dateImmatriculation',
-        'ice',
-        'ice_file',
-        'status_file',
-        'rc',
-        'rc_file',
-        'ifiscal',
-        'siegeSocial',
-        'paysActivite',
-        'paysResidence',
-        'regule',
-        'nomRegulateur',
-        'telephone',
-        'email',
-        'site_web',
-        'societe_gestion',
-        'agrement_file',
-        'NI',
-        'FS',
-        'RG',
-    ];
+    'etablissement_id',
+    'raisonSocial',
+    'capitalSocialPrimaire',
+    'FormeJuridique',
+    'dateImmatriculation',
+    'ice',
+    'rc',
+    'ice_file',
+    'status_file',
+    'rc_file',
+    'agrement_file',
+    'NI',
+    'FS',
+    'RG',
+    'ifiscal',
+    'siegeSocial',
+    'paysActivite',
+    'paysResidence',
+    'regule',
+    'nomRegulateur',
+    'telephone',
+    'email',
+    'siteweb',
+    'societe_gestion',
+];
+
 
     // One InfoGeneral has many contacts
-    public function contacts()
-    {
-        return $this->hasMany(Contact::class);
-    }
-    public function CoordonneesBancaires()
-    {
-        return $this->hasMany(CoordonneesBancaires::class);
-    }
-    public function TypologieClient()
-    {
-        return $this->hasMany(TypologieClient::class);
-    }
-    public function StatutFatca()
-    {
-        return $this->hasMany(StatutFatca::class);
-    }
-    public function SituationFinanciere()
-    {
-        return $this->hasMany(SituationFinanciere::class);
-    }
-    public function Actionnaire()
-    {
-        return $this->hasMany(Actionnaire::class);
-    }
-    public function BeneficiaireEffectif()
-    {
-        return $this->hasMany(BeneficiaireEffectif::class);
-    }
-    public function Administrateur()
-    {
-        return $this->hasMany(Administrateur::class);
-    }
-    public function PersonnesHabilites()
-    {
-        return $this->hasMany(PersonnesHabilites::class);
-    }
-    public function ObjetRelation()
-    {
-        return $this->hasMany(ObjetRelation::class);
-    }
-    public function ProfilRisque()
-    {
-        return $this->hasMany(ProfilRisque::class);
-    }
+public function paysActiviteInfo()
+{
+    return $this->belongsTo(Pays::class, 'paysActivite', 'id');
+}
 
 
 
+    public function paysresidence()
+    {
+        return $this->belongsTo(Pays::class, 'paysResidence', 'id');
+    }
+
+public function formeJuridique()
+{
+    return $this->belongsTo(FormeJuridique::class, 'FormeJuridique', 'id');
+}
+
+public function etablissement()
+{
+    return $this->hasOne(Etablissement::class,  'id');
+}
+public function contacts()
+    {
+        return $this->hasMany(Contact::class, 'info_general_id'); // foreign key in contacts table
+    }
+    
+    
 }

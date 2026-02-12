@@ -69,39 +69,46 @@
                 </li>
 
                 <li class="sidebar-item">
-                  <a class="sidebar-link" href="./contacts.html" aria-expanded="false">
+                  <a class="sidebar-link" href="{{ route('contacts.index') }}" aria-expanded="false">
                     <span><i class="ti ti-address-book"></i></span>
                     <span class="hide-menu">Contacts</span>
                   </a>
                 </li>
 
                 <li class="sidebar-item">
-                  <a class="sidebar-link" href="./actionnaires.html" aria-expanded="false">
+                  <a class="sidebar-link" href="{{ route('actionnariat.index') }}" aria-expanded="false">
                     <span><i class="ti ti-users"></i></span>
                     <span class="hide-menu">Actionnaires</span>
                   </a>
                 </li>
 
                 <li class="sidebar-item">
-                  <a class="sidebar-link" href="./beneficiaires.html" aria-expanded="false">
+                  <a class="sidebar-link" href="{{ route('benificiaireeffectif.index') }}" aria-expanded="false">
                     <span><i class="ti ti-id-badge"></i></span>
                     <span class="hide-menu">Bénéficiaires effectifs</span>
                   </a>
                 </li>
 
                 <li class="sidebar-item">
-                  <a class="sidebar-link" href="./administrateurs.html" aria-expanded="false">
+                  <a class="sidebar-link" href="{{ route('administrateurs.index') }}" aria-expanded="false">
                     <span><i class="ti ti-briefcase"></i></span>
                     <span class="hide-menu">Administrateurs</span>
                   </a>
                 </li>
 
                 <li class="sidebar-item">
-                  <a class="sidebar-link" href="./personnes-habilitees.html" aria-expanded="false">
+                  <a class="sidebar-link" href="{{ route('personneshabilites.index') }}" aria-expanded="false">
                     <span><i class="ti ti-shield"></i></span>
                     <span class="hide-menu">Personnes habilitées</span>
                   </a>
                 </li>
+                <li class="sidebar-item"> 
+                  <a class="sidebar-link" href="{{ route('coordonneesbancaires.index') }}" aria-expanded="false">
+                      <span><i class="ti ti-credit-card"></i></span>
+                      <span class="hide-menu">Coordonnées Bancaires</span>
+                  </a>
+              </li>
+
 
               <!-- ============================= -->
               <!-- Icons -->

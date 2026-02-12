@@ -13,17 +13,17 @@ return new class extends Migration
     {
        Schema::create('typologie_clients', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('info_generales_id'); // FK to etablissements
-            $table->unsignedBigInteger('secteurActivite');
-            $table->unsignedBigInteger('segment');
+            $table->unsignedBigInteger('etablissement_id');
+            // Foreign keys (optional, if you have these tables)
+            $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
+            $table->unsignedBigInteger('secteurActivite')->default(0);
+            $table->unsignedBigInteger('segment')->default(0);
             $table->boolean('activiteEtranger')->default(0);
-            $table->unsignedBigInteger('paysEtranger');
+            $table->unsignedBigInteger('paysEtranger')->nullable();
             $table->boolean('publicEpargne')->default(0);
             $table->string('publicEpargne_label', 500)->nullable();
             $table->timestamps();
 
-            // Foreign keys (optional)
-            $table->foreign('info_generales_id')->references('id')->on('info_generales')->onDelete('cascade');
 
             $table->foreign('secteurActivite')->references('id')->on('secteurs'); // if you have secteurs table
             

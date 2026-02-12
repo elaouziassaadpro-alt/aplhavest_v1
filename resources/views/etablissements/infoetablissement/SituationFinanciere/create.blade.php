@@ -10,13 +10,13 @@
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-2">Establishment</h4>
+                    <h4 class="fw-semibold mb-2">Establishment : {{ $etablissement->name }}</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item">
-                                <a class="text-muted text-decoration-none" href="{{ url('/') }}">Dashboard</a>
+                                <a class="text-muted text-decoration-none" >Dashboard</a>
                             </li>
-                            <li class="breadcrumb-item active">Situation Financière Patrimoniale{{ $info_generales_id }}</li>
+                            <li class="breadcrumb-item active">Situation Financière Patrimoniale</li>
                         </ol>
                     </nav>
                 </div>
@@ -30,9 +30,9 @@
     <!-- ===================== FORM ===================== -->
     <form action="{{ route('situationfinanciere.store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="info_generales_id" value="{{ $info_generales_id }}">
+        <input type="hidden" name="etablissement_id" value="{{ $etablissement->id }}">
 
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 mt-4 p-6">
+        <div class="max-w-7xl mx-auto bg-white cardetablissement shadow-sm border border-gray-100 mt-4 ">
 
             <!-- Card header -->
             <div class="px-6 py-4 border-b bg-gray-50 rounded-t-xl">
@@ -118,9 +118,7 @@
 
             </div>
         </div>
-    
-</div>
-<!-- ===================== SAVE BUTTON ===================== -->
+    <!-- ===================== SAVE BUTTON ===================== -->
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-save d-flex align-items-center justify-content-center mx-auto">
                 <svg class="w-6 h-6 me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
@@ -131,5 +129,7 @@
             </button>
         </div>
 </form>
+</div>
+
 
 @endsection

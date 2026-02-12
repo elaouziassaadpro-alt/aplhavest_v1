@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\StatutFATCA;
+use App\Models\InfoGeneral;
 use Illuminate\Http\Request;
+use App\Models\Etablissement;
+use Illuminate\Support\Facades\Storage;
+
+
 
 class StatutFATCAController extends Controller
 {
@@ -20,8 +25,9 @@ class StatutFATCAController extends Controller
      */
     public function create(Request $request)
     {
-        $info_generales_id = $request->info_generales_id;
-        return view('etablissements.infoetablissement.statutfatca.create', compact('info_generales_id'));
+        $etablissement_id = $request->etablissement_id;
+        $etablissement = Etablissement::find($etablissement_id);
+        return view('etablissements.infoetablissement.statutfatca.create', compact('etablissement'));
 
     }
 
@@ -33,7 +39,7 @@ class StatutFATCAController extends Controller
     // dd($request->all());
         // Validation
         $validated = $request->validate([
-            'info_generales_id' => 'required|integer',
+            'etablissement_id' => 'required|integer',
             'us_entity_check' => 'nullable|boolean',
             'fichiers.fatca' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'giin_check' => 'nullable|boolean',
@@ -48,16 +54,25 @@ class StatutFATCAController extends Controller
         }
 
        StatutFatca::create([
-        'info_generales_id' => $request->input('info_generales_id'), // <- obligatoire
+        'etablissement_id' => $request->input('etablissement_id'), // <- obligatoire
         'usEntity' => $request->has('us_entity_check') ? 1 : 0,
         'fichier_usEntity' => $fatcaPath ?? null,
         'giin' => $request->has('giin_check') ? 1 : 0,
         'giin_label' => $request->giin_inputs ?? null,
         'giin_label_Autres' => !$request->has('giin_check') ? $request->giin_autres_input : null,
        ]);
+        $etablissement = Etablissement::findOrFail($request->etablissement_id);
 
+        
 
-        return redirect()->route('situationfinanciere.create',['info_generales_id' => $request->info_generales_id])->with('success', 'Statut FATCA enregistré avec succès !');
+        if ($etablissement->fresh()->isCompleted()) {
+            return redirect()->route('Rating', [
+                'etablissement_id' => $etablissement->id
+            ]);
+
+        }
+
+        return redirect()->route('situationfinanciere.create',['etablissement_id' => $request->etablissement_id])->with('success', 'Statut FATCA enregistré avec succès !');
     
     }
 
@@ -80,10 +95,51 @@ class StatutFATCAController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, StatutFATCA $statutFATCA)
-    {
-        //
+    public function update(Request $request, StatutFatca $statutFatca)
+{
+    $data = $request->validate([
+        'usEntity'          => 'nullable|boolean',
+        'fichier_usEntity'  => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+        'giin'              => 'nullable|boolean',
+        'giin_label'        => 'nullable|string|max:255',
+        'giin_label_Autres' => 'nullable|string|max:255',
+    ]);
+
+    // Normalisation des checkbox
+    $data['usEntity'] = $request->boolean('usEntity');
+    $data['giin']     = $request->boolean('giin');
+
+    // Logique GIIN
+    if ($data['giin']) {
+        $data['giin_label_Autres'] = null;
+    } else {
+        $data['giin_label'] = null;
     }
+
+    // Gestion du fichier US Entity
+    if ($data['usEntity']) {
+        if ($request->hasFile('fichier_usEntity')) {
+            if ($statutFatca->fichier_usEntity) {
+                Storage::disk('public')->delete($statutFatca->fichier_usEntity);
+            }
+            $data['fichier_usEntity'] = $request->file('fichier_usEntity')
+                                           ->store('fatca', 'public');
+        }
+    } else {
+        // Supprimer le fichier si US Entity décoché
+        if ($statutFatca->fichier_usEntity) {
+            Storage::disk('public')->delete($statutFatca->fichier_usEntity);
+        }
+        $data['fichier_usEntity'] = null;
+    }
+
+    // Mise à jour
+    $statutFatca->update($data);
+
+    return back()->with('success', 'Statut FATCA mis à jour avec succès.');
+}
+
+
 
     /**
      * Remove the specified resource from storage.

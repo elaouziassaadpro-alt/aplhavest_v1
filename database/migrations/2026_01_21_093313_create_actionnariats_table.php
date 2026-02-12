@@ -10,7 +10,9 @@ return new class extends Migration
     {
         Schema::create('actionnariat', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('info_generales_id'); // FK to infos_generales
+            $table->unsignedBigInteger('etablissement_id');
+            // Foreign keys (optional, if you have these tables)
+            $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
 
             $table->string('nom_rs', 200)->nullable();       // Nom / Raison sociale
             $table->string('prenom', 100)->nullable();       // Prénom (si personne physique)
@@ -20,10 +22,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Foreign key to InfosGenerales
-            $table->foreign('info_generales_id')
-                  ->references('id')->on('info_generales')
-                  ->onDelete('cascade');
+            
         });
     }
 
