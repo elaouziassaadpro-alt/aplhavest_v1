@@ -37,10 +37,7 @@ return new class extends Migration
             $table->string('email', 200)->nullable();
             $table->string('siteweb', 100)->nullable();
             $table->boolean('societe_gestion')->default(0);
-            $table->string('agrement_file')->nullable();
-            $table->string('NI')->nullable();
-            $table->string('FS')->nullable();
-            $table->string('RG')->nullable();
+
             $table->timestamps();
             
             $table->foreign('paysActivite')->references('id')->on('pays')->nullOnDelete();

@@ -9,10 +9,9 @@ use App\Models\Pays;
 use Illuminate\Support\Str;
 use App\Models\Etablissement;
 use App\Models\Contact;
-use App\Http\Controllers\RatingEtablissementController;
 use Illuminate\Support\Facades\Storage;
-
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InfoGeneralController extends Controller
 {
@@ -21,7 +20,6 @@ class InfoGeneralController extends Controller
      */
     public function index()
     {
-        
     }
 
     /**
@@ -31,167 +29,109 @@ class InfoGeneralController extends Controller
     {
         $formejuridiques = formejuridique::all();
         $pays = Pays::all();
-        return view("etablissements.infoetablissement.infogenerals.create", compact('formejuridiques', 'pays'));
+        return view("etablissements.infoetablissement.InfoGenerals.create", compact('formejuridiques', 'pays'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-
-
-public function store(Request $request)
-{
-    /* ===================== 1. VALIDATION ===================== */
-    $validated = $request->validate([
-        'raisonSocial'            => 'required|string|max:200',
-        'capitalSocialPrimaire'   => 'required|numeric|min:0',
-        'FormeJuridique'          => 'nullable|exists:formes_juridiques,id',
-        'dateImmatriculation'     => 'nullable|date',
-
-        'ice'                     => 'nullable|string|max:100',
-        'ice_file'                => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'status_file'                => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-
-        'rc_input'                => 'nullable|string|max:100',
-        'rc_file'                => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-
-        'ifiscal'                 => 'nullable|string|max:100',
-
-        'siegeSocial'             => 'nullable|string|max:350',
-        'paysActivite'            => 'nullable|exists:pays,id',
-        'paysResidence'           => 'nullable|exists:pays,id',
-
-        'regule'                  => 'nullable|boolean',
-        'nomRegulateur'           => 'nullable|string|max:200',
-
-        'telephone'               => 'nullable|string|max:15',
-        'email'                   => 'nullable|email|max:200',
-        'siteweb'                 => 'nullable|string|max:100',
-
-        'societe_gestion'         => 'nullable|boolean',
-
-        /* Files */
-        'agrement_file'           => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'NI'                      => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'FS'                      => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'RG'                      => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-    ]);
-
-    /* ===================== 2. CREATE BASE RECORD ===================== */
-
-    $etablissement = Etablissement::create([
-        'name' => $request->raisonSocial,
-    ]);
-    $info = InfoGeneral::create([
-        'etablissement_id'       => $etablissement->id,
-        'raisonSocial'           => $request->raisonSocial,
-        'capitalSocialPrimaire'  => $request->capitalSocialPrimaire,
-        'FormeJuridique'         => $request->FormeJuridique,
-        'dateImmatriculation'    => $request->dateImmatriculation,
-
-        'ice'                    => $request->ice,
-        'rc'                     => $request->rc_input,
-        'ifiscal'                => $request->ifiscal,
-        'siegeSocial'            => $request->siegeSocial,
-
-        'paysActivite'           => $request->paysActivite,
-        'paysResidence'          => $request->paysResidence,
-
-        'regule'                 => $request->boolean('regule'),
-        'nomRegulateur'          => $request->nomRegulateur,
-
-        'telephone'              => $request->telephone,
-        'email'                  => $request->email,
-        'siteweb'                => $request->siteweb,
-
-        'societe_gestion'        => $request->boolean('societe_gestion'),
-    ]);
-
-    /* ===================== 3. FILE UPLOADS ===================== */
-$slug = Str::slug($request->raisonSocial);
-$basePath = "informations_generales/{$info->id}";
-
-$uploadedPaths = [];
-
-$files = [
-    'ice_file'      => 'ice_file',
-    'status_file'   => 'status_file',
-    'rc_file'       => 'rc_file',
-    'agrement_file' => 'agrement',
-    'NI'            => 'NI',
-    'FS'            => 'FS',
-    'RG'            => 'RG',
-];
-
-foreach ($files as $input => $folder) {
-    if ($request->hasFile($input)) {
-        $file = $request->file($input);
-        $filename = "{$slug}-{$folder}-" . time() . "." . $file->getClientOriginalExtension();
-
-        $path = $file->storeAs(
-            "{$basePath}/{$folder}",
-            $filename,
-            'public'
-        );
-
-        // Collect for single update
-        $uploadedPaths[$input] = $path;
-    }
-}
-
-// Update all uploaded files at once
-if (!empty($uploadedPaths)) {
-    $info->update($uploadedPaths);
-}
-/* ===================== 4. SAVE CONTACTS ===================== */
-$contactsCount = count($request->input('noms_contacts', []));
-
-for ($i = 0; $i < $contactsCount; $i++) {
-    $nom = $request->input('noms_contacts')[$i] ?? null;
-    $prenom = $request->input('prenoms_contacts')[$i] ?? null;
-    $fonction = $request->input('fonctions_contacts')[$i] ?? null;
-    $telephone = $request->input('telephones_contacts')[$i] ?? null;
-    $email = $request->input('emails_contacts')[$i] ?? null;
-
-    // Skip empty rows
-    if (!$nom && !$prenom && !$telephone && !$email) continue;
-
-    // Save in DB
-    $info->contacts()->create([
-        'nom'      => $nom,
-        'prenom'   => $prenom,
-        'fonction' => $fonction,
-        'telephone'    => $telephone,
-        'email'    => $email,
-    ]);
-} 
-
-
-            
-
-    $etablissement = Etablissement::findOrFail($info->etablissement_id);
-
-    // Trigger rating update
-    $etablissement->updateRiskRating();
-
-    if ($etablissement->fresh()->isCompleted()) {
-        return redirect()->route('Rating', ['etablissement_id' => $etablissement->id]);
-    }
-    
-    
-    /* ===================== 4. REDIRECT ===================== */
-    return redirect()
-       ->route('coordonneesbancaires.create', ['etablissement_id' => $etablissement->id])
-    ->with('success', 'Informations enregistrées avec succès');
-}
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(InfoGeneral $infoGeneral)
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'raisonSocial'            => 'required|string|max:200',
+            'capitalSocialPrimaire'   => 'required|numeric|min:0',
+            'FormeJuridique'          => 'nullable|exists:formes_juridiques,id',
+            'dateImmatriculation'     => 'nullable|date',
+            'ice'                     => 'nullable|string|max:100',
+            'rc_input'                => 'nullable|string|max:100',
+            'ifiscal'                 => 'nullable|string|max:100',
+            'siegeSocial'             => 'nullable|string|max:350',
+            'paysActivite'            => 'nullable|exists:pays,id',
+            'paysResidence'           => 'nullable|exists:pays,id',
+            'note'                    => 'nullable|numeric',
+            'percentage'              => 'nullable|numeric',
+            'table_match'             => 'nullable|string',
+            'match_id'              => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $etablissement = Etablissement::create([
+                'name' => $request->raisonSocial,
+            ]);
+
+            $info = InfoGeneral::create([
+                'etablissement_id'       => $etablissement->id,
+                'raisonSocial'           => $request->raisonSocial,
+                'capitalSocialPrimaire'  => $request->capitalSocialPrimaire,
+                'FormeJuridique'         => $request->FormeJuridique,
+                'dateImmatriculation'    => $request->dateImmatriculation,
+                'ice'                    => $request->ice,
+                'rc'                     => $request->rc_input,
+                'ifiscal'                => $request->ifiscal,
+                'siegeSocial'            => $request->siegeSocial,
+                'paysActivite'           => $request->paysActivite,
+                'paysResidence'          => $request->paysResidence,
+                'regule'                 => $request->boolean('regule'),
+                'nomRegulateur'          => $request->nomRegulateur,
+                'telephone'              => $request->telephone,
+                'email'                  => $request->email,
+                'siteweb'                => $request->siteweb,
+                'societe_gestion'        => $request->boolean('societe_gestion'),
+                'note'                   => $request->note ?? 1,
+                'percentage'             => $request->percentage ?? 0,
+                'table_match'            => $request->table_match,
+                'match_id'             => $request->match_id,
+            ]);
+
+            // File Uploads
+            $slug = Str::slug($request->raisonSocial);
+            $basePath = "informations_generales/{$info->id}";
+            $files = [
+                'ice_file'      => 'ice_file',
+                'status_file'   => 'status_file',
+                'rc_file'       => 'rc_file',
+                'agrement_file' => 'agrement',
+                'NI'            => 'NI',
+                'FS'            => 'FS',
+                'RG'            => 'RG',
+            ];
+
+            foreach ($files as $input => $folder) {
+                if ($request->hasFile($input)) {
+                    $file = $request->file($input);
+                    $filename = "{$slug}-{$folder}-" . time() . "." . $file->getClientOriginalExtension();
+                    $info->$input = $file->storeAs("{$basePath}/{$folder}", $filename, 'public');
+                }
+            }
+            $info->save();
+
+            // Contacts
+            $noms = $request->input('noms_contacts', []);
+            foreach ($noms as $i => $nom) {
+                if (!$nom) continue;
+                $info->contacts()->create([
+                    'nom'       => $nom,
+                    'prenom'    => $request->input("prenoms_contacts.$i"),
+                    'fonction'  => $request->input("fonctions_contacts.$i"),
+                    'telephone' => $request->input("telephones_contacts.$i"),
+                    'email'     => $request->input("emails_contacts.$i"),
+                ]);
+            }
+
+            $etablissement->updateRiskRating();
+
+            DB::commit();
+
+            return redirect()
+                ->route('coordonneesbancaires.create', ['etablissement_id' => $etablissement->id])
+                ->with('success', 'Informations enregistrées avec succès');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error storing InfoGeneral: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de l’enregistrement : ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -199,163 +139,125 @@ for ($i = 0; $i < $contactsCount; $i++) {
      */
     public function edit(InfoGeneral $infoGeneral)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, InfoGeneral $infoGeneral)
-{
-    // 1️⃣ Validation
-    $validated = $request->validate([
-        'raisonSocial'            => 'required|string|max:200',
-        'capitalSocialPrimaire'   => 'required|numeric|min:0',
-        'FormeJuridique'          => 'nullable|exists:formes_juridiques,id',
-        'dateImmatriculation'     => 'nullable|date',
-
-        'ice'                     => 'nullable|string|max:100',
-        'ice_file'                => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'status_file'             => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'rc_input'                => 'nullable|string|max:100',
-        'rc_file'                 => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'ifiscal'                 => 'nullable|string|max:100',
-        'siegeSocial'             => 'nullable|string|max:350',
-        'paysActivite'            => 'nullable|exists:pays,id',
-        'paysResidence'           => 'nullable|exists:pays,id',
-        'regule'                  => 'nullable|boolean',
-        'nomRegulateur'           => 'nullable|string|max:200',
-        'telephone'               => 'nullable|string|max:15',
-        'email'                   => 'nullable|email|max:200',
-        'siteweb'                 => 'nullable|string|max:100',
-        'societe_gestion'         => 'nullable|boolean',
-
-        /* Files */
-        'agrement_file'           => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'NI'                      => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'FS'                      => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-        'RG'                      => 'nullable|file|mimes:pdf,jpg,png|max:2048',
-    ]);
-
-// Mettre à jour l'enregistrement existant
-    $infoGeneral->update([
-        'raisonSocial' => $request->raisonSocial,
-        'capitalSocialPrimaire' => $request->capitalSocialPrimaire,
-        'FormeJuridique' => $request->FormeJuridique,
-        'dateImmatriculation' => $request->dateImmatriculation,
-        'ice' => $request->ice,
-        'rc' => $request->rc_input,
-        'ifiscal' => $request->ifiscal,
-        'siegeSocial' => $request->siegeSocial,
-        'paysActivite' => $request->paysActivite,
-        'paysResidence' => $request->paysResidence,
-        'regule' => $request->boolean('regule'),
-        'nomRegulateur' => $request->nomRegulateur,
-        'telephone' => $request->telephone,
-        'email' => $request->email,
-        'siteweb' => $request->siteweb,
-        'societe_gestion' => $request->boolean('societe_gestion'),
-    ]);
-
-    /* ===================== 3. FILE UPLOADS ===================== */
-$slug = Str::slug($request->raisonSocial);
-$basePath = "informations_generales/{$infoGeneral->id}";
-
-$uploadedPaths = [];
-
-$files = [
-    'ice_file'      => 'ice_file',
-    'status_file'   => 'status_file',
-    'rc_file'       => 'rc_file',
-    'agrement_file' => 'agrement',
-    'NI'            => 'NI',
-    'FS'            => 'FS',
-    'RG'            => 'RG',
-];
-
-foreach ($files as $input => $folder) {
-    // Si societe_gestion est false, on supprime tous les fichiers concernés
-    if (!$infoGeneral->societe_gestion && in_array($input, ['agrement_file', 'NI', 'FS', 'RG'])) {
-        if ($infoGeneral->$input) {
-            Storage::disk('public')->delete($infoGeneral->$input);
-        }
-        $uploadedPaths[$input] = null; // Mettre à null dans la BDD
-        continue; // Passe à l'itération suivante
-    }
-
-    // Upload du nouveau fichier s'il y a un fichier
-    if ($request->hasFile($input)) {
-        // Supprimer l'ancien fichier si existant
-        if ($infoGeneral->$input) {
-            Storage::disk('public')->delete($infoGeneral->$input);
-        }
-
-        $file = $request->file($input);
-        $filename = "{$slug}-{$folder}-" . time() . "." . $file->getClientOriginalExtension();
-
-        $path = $file->storeAs(
-            "{$basePath}/{$folder}",
-            $filename,
-            'public'
-        );
-
-        $uploadedPaths[$input] = $path;
-    }
-}
-
-
-
-
-// Update all uploaded files at once
-if (!empty($uploadedPaths)) {
-    $infoGeneral->update($uploadedPaths);
-}
-$noms       = $request->input('noms_contacts', []);
-$prenoms    = $request->input('prenoms_contacts', []);
-$fonctions  = $request->input('fonctions_contacts', []);
-$telephones = $request->input('telephones_contacts', []);
-$emails     = $request->input('emails_contacts', []);
-
-$contacts = [];
-
-foreach ($noms as $i => $nom) {
-
-    $contact = [
-        'nom'       => $nom,
-        'prenom'    => $prenoms[$i] ?? null,
-        'fonction'  => $fonctions[$i] ?? null,
-        'telephone' => $telephones[$i] ?? null,
-        'email'     => $emails[$i] ?? null,
-    ];
-
-    // ✅ Ignore lignes vides
-    if (!$contact['nom'] && !$contact['prenom'] && !$contact['telephone'] && !$contact['email']) {
-        continue;
-    }
-
-    $contacts[] = $contact;
-}
-
-// ✅ Delete once
-$infoGeneral->contacts()->delete();
-
-// ✅ Insert
-$infoGeneral->contacts()->createMany($contacts);
-    
-    // Trigger rating update
-    $infoGeneral->etablissement?->updateRiskRating();
-
-    return redirect()->back()->with('success', 'Informations mises à jour avec succès.');
-}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(InfoGeneral $infoGeneral)
+    public function update(Request $request, InfoGeneral $infoGeneral)
     {
-        //
+        $request->validate([
+            'raisonSocial'            => 'required|string|max:200',
+            'capitalSocialPrimaire'   => 'required|numeric|min:0',
+            'FormeJuridique'          => 'nullable|exists:formes_juridiques,id',
+            'dateImmatriculation'     => 'nullable|date',
+            'note'                    => 'nullable|numeric',
+            'percentage'              => 'nullable|numeric',
+            'table_match'             => 'nullable|string',
+            'match_id'              => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $infoGeneral->update([
+                'raisonSocial'           => $request->raisonSocial,
+                'capitalSocialPrimaire'  => $request->capitalSocialPrimaire,
+                'FormeJuridique'         => $request->FormeJuridique,
+                'dateImmatriculation'    => $request->dateImmatriculation,
+                'ice'                    => $request->ice,
+                'rc'                     => $request->rc_input,
+                'ifiscal'                => $request->ifiscal,
+                'siegeSocial'            => $request->siegeSocial,
+                'paysActivite'           => $request->paysActivite,
+                'paysResidence'          => $request->paysResidence,
+                'regule'                 => $request->boolean('regule'),
+                'nomRegulateur'          => $request->nomRegulateur,
+                'telephone'              => $request->telephone,
+                'email'                  => $request->email,
+                'siteweb'                => $request->siteweb,
+                'societe_gestion'        => $request->boolean('societe_gestion'),
+                'note'                   => $request->note ?? 1,
+                'percentage'             => $request->percentage ?? 0,
+                'table_match'            => $request->table_match,
+                'match_id'             => $request->match_id,
+            ]);
+
+            // File Uploads
+            $slug = Str::slug($request->raisonSocial);
+            $basePath = "informations_generales/{$infoGeneral->id}";
+            $files = [
+                'ice_file'      => 'ice_file',
+                'status_file'   => 'status_file',
+                'rc_file'       => 'rc_file',
+                'agrement_file' => 'agrement',
+                'NI'            => 'NI',
+                'FS'            => 'FS',
+                'RG'            => 'RG',
+            ];
+
+            foreach ($files as $input => $folder) {
+                if ($request->hasFile($input)) {
+                    if ($infoGeneral->$input) Storage::disk('public')->delete($infoGeneral->$input);
+                    $file = $request->file($input);
+                    $filename = "{$slug}-{$folder}-" . time() . "." . $file->getClientOriginalExtension();
+                    $infoGeneral->$input = $file->storeAs("{$basePath}/{$folder}", $filename, 'public');
+                }
+            }
+            $infoGeneral->save();
+
+            // Contacts
+            $infoGeneral->contacts()->delete();
+            $noms = $request->input('noms_contacts', []);
+            foreach ($noms as $i => $nom) {
+                if (!$nom) continue;
+                $infoGeneral->contacts()->create([
+                    'nom'       => $nom,
+                    'prenom'    => $request->input("prenoms_contacts.$i"),
+                    'fonction'  => $request->input("fonctions_contacts.$i"),
+                    'telephone' => $request->input("telephones_contacts.$i"),
+                    'email'     => $request->input("emails_contacts.$i"),
+                ]);
+            }
+
+            if ($infoGeneral->etablissement) {
+                $infoGeneral->etablissement->updateRiskRating();
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Informations mises à jour avec succès.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error updating InfoGeneral: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
+        }
     }
-    // Méthode suppression multiple
+
+    public function checkRisque(Request $request)
+    {
+        $request->validate([
+            'raisonSocial' => 'required|string|max:255',
+        ]);
+
+        $info = new InfoGeneral();
+        $info->nom_rs = $request->raisonSocial; // trait uses nom_rs
+        
+        $risk = $info->checkRisk();
+        
+        $info->raisonSocial = $request->raisonSocial;
+        $info->note = $risk['note'] ?? 1;
+        $info->percentage = $risk['percentage'] ?? 0;
+        $info->table_match = $risk['table'] ?? null;
+        $info->match_id = $risk['match_id'] ?? null;
+
+        return view('etablissements.infoetablissement.InfoGenerals.check_risque', [
+            'info' => $info,
+            'risk' => $risk,
+            'requestData' => $request->all()
+        ]);
+    }
+
     public function deleteContact(Request $request)
     {
         $request->validate([
@@ -363,14 +265,30 @@ $infoGeneral->contacts()->createMany($contacts);
             'ids.*' => 'integer|exists:contacts,id',
         ]);
 
-        Contact::whereIn('id', $request->ids)->delete();
+        try {
+            $firstContact = Contact::with('infoGeneral.etablissement')->find($request->ids[0]);
+            $etablissement = $firstContact?->infoGeneral?->etablissement;
 
-        return response()->json([
-            'message' => 'Contacts supprimés avec succès.'
-        ]);
+            Contact::whereIn('id', $request->ids)->delete();
+
+            // Trigger rating update
+            $etablissement?->updateRiskRating();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Contacts supprimés avec succès.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Delete contact error: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression'
+            ], 500);
+        }
     }
-    public function Contactindex(){
-        $contacts = Contact::all();
-        return view('etablissements.infoetablissement.infoGenerals.Contact.index', compact('contacts'));
+
+    public function Contactindex()
+    {
+        return view('etablissements.infoetablissement.InfoGenerals.Contact.index');
     }
 }

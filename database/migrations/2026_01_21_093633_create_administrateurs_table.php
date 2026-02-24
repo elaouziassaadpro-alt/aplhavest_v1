@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('identite', 100)->nullable();
             $table->unsignedBigInteger('nationalite_id')->nullable(); // FK vers pays
             $table->string('fonction', 150)->nullable();
+            $table->integer('note')->default(0);    
+
 
             // PPE fields
             $table->boolean('ppe')->default(0);                   // checkbox

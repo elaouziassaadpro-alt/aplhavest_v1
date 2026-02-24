@@ -66,12 +66,7 @@ class ProfilRisqueController extends Controller
 
         
 
-        if ($etablissement->fresh()->isCompleted()) {
-            return redirect()->route('Rating', [
-                'etablissement_id' => $etablissement->id
-            ]);
-
-        }
+        
 
         // Redirect with success message
         return redirect()->route('etablissements.index')->with('success', 'Profil Risque enregistré avec succès!');

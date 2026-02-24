@@ -25,6 +25,10 @@ return new class extends Migration
             $table->string('prenom', 200)->nullable();
             $table->string('identite', 100)->nullable();
             $table->string('fonction', 200)->nullable();
+            $table->integer('note')->default(0);    
+            $table->unsignedBigInteger('nationalite_id')->nullable(); // FK vers table pays
+            $table->foreign('nationalite_id')->references('id')->on('pays')->onDelete('set null');
+
 
             // PPE and PPE link
             $table->boolean('ppe')->default(false);

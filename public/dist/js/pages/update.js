@@ -4,6 +4,48 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+     // SELECT DROPDOWN
+    $(document).on('click', '.custom-dropdown li', function () {
+
+        let wrapper = $(this).closest('.custom-select-wrapper');
+
+        wrapper.find('input[type="text"]').val($(this).text());
+        wrapper.find('input[type="hidden"]').val($(this).data('value'));
+
+        wrapper.find('.custom-dropdown').hide();
+    });
+
+    // SHOW DROPDOWN + RESET FILTER
+    $(document).on('focus', '.pays-search, .ppe-search, .banque-search, .ville-search', function () {
+
+        let dropdown = $(this).siblings('.custom-dropdown');
+
+        dropdown.find('li').show();
+        dropdown.show();
+    });
+
+    // FILTER
+    $(document).on('keyup', '.pays-search, .ppe-search, .banque-search, .ville-search', function () {
+
+        let value = $(this).val().toLowerCase();
+        let dropdown = $(this).siblings('.custom-dropdown');
+
+        dropdown.find('li').each(function () {
+
+            let text = $(this).text().toLowerCase();
+
+            $(this).toggle(value === '' || text.startsWith(value));
+        });
+    });
+
+    // CLICK OUTSIDE
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.custom-select-wrapper').length) {
+            $('.custom-dropdown').hide();
+        }
+    });
+    
+    
     const editBtns = document.querySelectorAll('.edit-section-btn');
 
     editBtns.forEach(btn => {
@@ -109,10 +151,10 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleSwitch('Societe_gestion_check', 'Societe_gestionLabel', '#societeGestionFiles');
     toggleSwitch('activite_etranger_check', 'activite_etranger_label', '#pays_etranger_wrapper');
     toggleSwitch('marche_check', 'marche_label', '#marche_wrapper');
-    toggleSwitch('us_entity_id', 'usEntityLabel', '#dropzone-fichierFATCA');
-    toggleSwitch('giin_id', 'giinLabel', '#giin_data_id');
     toggleSwitch('mandataire_id', 'mandataireLabel', '.mandat-hide');
     toggleSwitch('departement_gestion_id', 'labelcheckbox', '#departement_gestion_data_container');
+    toggleSwitch('us_entity_id', 'us_entity_label', '#fichier_usEntity_input');
+    toggleSwitch('giin_id', 'giinLabel', '#giin_data_id');
 
     /**
      * Helper for dynamic row switches (PPE, etc.)
@@ -182,7 +224,116 @@ function toggleLienPPE(index) {
         if (label) label.innerText = 'Non';
     }
 }
+function ENTITY(){
+ /* ================= US ENTITY ================= */
 
+    const usCheckbox  = document.getElementById('us_entity_id');
+    const usLabel     = document.getElementById('us_entity_label');
+    const usFileInput = document.getElementById('fichier_usEntity_input');
+
+    function toggleUS() {
+        if (!usCheckbox || !usLabel || !usFileInput) return;
+
+        if (usCheckbox.checked) {
+            usLabel.textContent = 'Oui';
+            usFileInput.style.display = 'block';
+        } else {
+            usLabel.textContent = 'Non';
+            usFileInput.style.display = 'none';
+            usFileInput.value = ''; // reset fichier si décoché
+        }
+    }
+
+    if (usCheckbox) {
+        usCheckbox.addEventListener('change', toggleUS);
+        toggleUS();
+    }
+
+    /* ================= GIIN ================= */
+
+    const giinCheckbox   = document.getElementById('giin_id');
+    const giinLabel      = document.getElementById('giin_label');
+    const giinData       = document.getElementById('giin_data_id');
+    const giinAutresInput = document.querySelector('input[name="giin_label_Autres"]');
+    const giinAutresBox   = giinAutresInput?.closest('.flex-grow-1');
+
+    function toggleGIIN() {
+        if (!giinCheckbox || !giinLabel) return;
+
+        if (giinCheckbox.checked) {
+            giinLabel.textContent = 'Oui';
+
+            if (giinData) giinData.style.display = 'block';
+            if (giinAutresBox) giinAutresBox.style.display = 'none';
+        } else {
+            giinLabel.textContent = 'Non';
+
+            if (giinData) giinData.style.display = 'none';
+            if (giinAutresBox) giinAutresBox.style.display = 'block';
+        }
+    }
+
+    if (giinCheckbox) {
+        giinCheckbox.addEventListener('change', toggleGIIN);
+        toggleGIIN();
+    }
+}
+function dropzone() {
+    const usCheckbox = document.getElementById('us_entity_id');
+    const usLabel = document.getElementById('us_entity_label');
+    const dropzoneFATCA = document.getElementById('dropzone-fichierFATCA');
+    const fatcaInput = document.getElementById('fatca_hidden_input');
+
+    if (!usCheckbox || !dropzoneFATCA || !fatcaInput) return;
+
+    // Toggle affichage dropzone
+    function toggleUS() {
+        if(usCheckbox.checked) {
+            if (usLabel) usLabel.textContent = 'Oui';
+            dropzoneFATCA.style.display = 'block';
+        } else {
+            if (usLabel) usLabel.textContent = 'Non';
+            dropzoneFATCA.style.display = 'none';
+            fatcaInput.value = ''; // reset
+        }
+    }
+    usCheckbox.addEventListener('change', toggleUS);
+    toggleUS();
+
+    // Quand on clique sur le dropzone, ouvre le file input
+    dropzoneFATCA.addEventListener('click', () => {
+        fatcaInput.click();
+    });
+
+    // Afficher le nom du fichier sélectionné
+    fatcaInput.addEventListener('change', () => {
+        if(fatcaInput.files.length > 0){
+            const p = dropzoneFATCA.querySelector('p');
+            if (p) p.textContent = fatcaInput.files[0].name;
+        }
+    });
+
+    // Optionnel : support du drag & drop
+    dropzoneFATCA.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzoneFATCA.style.backgroundColor = '#f0f0f0';
+    });
+
+    dropzoneFATCA.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropzoneFATCA.style.backgroundColor = '#fff';
+    });
+
+    dropzoneFATCA.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fatcaInput.files = e.dataTransfer.files;
+        if(fatcaInput.files.length > 0){
+            const p = dropzoneFATCA.querySelector('p');
+            if (p) p.textContent = fatcaInput.files[0].name;
+        }
+        dropzoneFATCA.style.backgroundColor = '#fff';
+    });
+}
 
 
 
@@ -232,6 +383,8 @@ function removeHabilite(index) {
 function supprimercontact(button) {
     button.closest('.row').remove();
 }
+// SELECT DROPDOWN
+   
 
 // add contact form
 let contactCount = 0;  // Global counter for unique rows
@@ -279,4 +432,7 @@ function ajoutercontact() {
     document.querySelector('.contactsRows').insertAdjacentHTML('beforeend', html);
 }
 
-
+document.addEventListener('DOMContentLoaded', function() {
+    ENTITY();
+    dropzone();
+});

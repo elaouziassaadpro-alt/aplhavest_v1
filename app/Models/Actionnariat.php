@@ -19,6 +19,10 @@ class Actionnariat extends Model
         'identite',
         'nombre_titres',
         'pourcentage_capital',
+        'note',
+        'percentage',
+        'table_match',
+        'match_id'
     ];
 
     // Relation to InfosGenerales
@@ -30,6 +34,6 @@ class Actionnariat extends Model
     
 public function checkRisk()
     {
-        return $this->checkidentity();
+        return $this->checkIdentity();
     }
 }

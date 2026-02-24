@@ -27,6 +27,7 @@ return new class extends Migration
         $table->unsignedBigInteger('pays_naissance_id')->nullable();
         $table->date('date_naissance')->nullable();
         $table->string('identite', 100)->nullable();
+        $table->integer('note')->default(0);    
         $table->string('cin_file', 100)->nullable();
 
         $table->unsignedBigInteger('nationalite_id')->nullable();

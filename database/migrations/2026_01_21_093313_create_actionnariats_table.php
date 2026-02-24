@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('prenom', 100)->nullable();       // Prénom (si personne physique)
             $table->string('identite', 100)->nullable();     // N° d'identité ou RC
             $table->integer('nombre_titres')->nullable();    // Nombre de titres
+            $table->integer('note')->default(0);    
             $table->decimal('pourcentage_capital', 5, 2)->nullable(); // % capital ou droit de vote
+            
 
             $table->timestamps();
 

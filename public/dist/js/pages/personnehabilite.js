@@ -17,6 +17,13 @@ function initCreatePageLogic() {
         ppesList += `<li data-value="${ppe.id}">${ppe.libelle}</li>`;
     });
 
+    let paysList = '';
+    if (window.APP_DATA.pays) {
+        window.APP_DATA.pays.forEach(p => {
+            paysList += `<li data-value="${p.id}">${p.libelle}</li>`;
+        });
+    }
+
     $('#addPHabiliteRowBtn').click(function (e) {
 
         e.preventDefault();
@@ -31,10 +38,8 @@ function initCreatePageLogic() {
         let row = `
         <div class="row mt-3 phabiliteRowInfos">
 
-            
-
-            <div class="col-md-2 mb-4">
-            <label>Nom </label>
+            <div class="col-md-2">
+                <label>Nom </label>
                 <input type="text" class="form-control" placeholder="Nom" name="noms_habilites[]">
             </div>
             <div class="col-md-2">
@@ -46,21 +51,29 @@ function initCreatePageLogic() {
                 <input type="text" class="form-control" placeholder="N° CIN / Passeport" name="cin_habilites[]">
             </div>
             <div class="col-md-1 mt-4">
-
                 <input type="file" id="cin_file_hab_${rowsCount}" name="cin_habilites_file[]" style="display:none;" accept=".pdf,.jpg,.png">
                 <label for="cin_file_hab_${rowsCount}" class="btn btn-primary w-100"><i class="ti ti-upload"></i>&nbsp; CIN</label>
             </div>
             <div class="col-md-2">
+                <div class="custom-select-wrapper">
+                    <label>Nationalité</label>
+                    <input type="text" class="form-control pays-search" placeholder="Chercher...">
+                    <ul class="custom-dropdown">${paysList}</ul>
+                    <input type="hidden" name="nationalites_habilites[]">
+                </div>
+            </div>
+            
+            <div class="col-md-2">
                 <label>Fonction</label>
                 <input type="text" class="form-control" placeholder="Fonction" name="fonctions_habilites[]">
+            </div>
+            <div class="col-md-1 mt-4">
+                <a href="#" class="deletePHabiliteRow " data-rowid="${rowsCount}"><i class="ti ti-trash h5"></i></a>
             </div>
             <div class="col-md-2 mt-4">
 
                 <input type="file" id="hab_file_hab_${rowsCount}" name="hab_habilites[]" style="display:none;" accept=".pdf,.jpg,.png">
                 <label for="hab_file_hab_${rowsCount}" class="btn btn-primary w-100"><i class="ti ti-upload"></i>&nbsp; Habilitation</label>
-            </div>
-            <div class="col-md-1 mt-4">
-                <a href="#" class="deletePHabiliteRow " data-rowid="${rowsCount}"><i class="ti ti-trash h5"></i></a>
             </div>
 
             <!-- PPE -->

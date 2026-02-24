@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Activité à l'étranger
     toggleSwitchWithInput({
         checkboxId: 'activite_etranger_check',
-        labelId: 'activite_etranger_label',
+        labelId: 'activiteEtrangerLabel',
         wrapperId: 'pays_etranger_wrapper'
     });
 

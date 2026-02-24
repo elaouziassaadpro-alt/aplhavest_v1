@@ -2,7 +2,7 @@
         <!-- Sidebar scroll-->
         <div>
           <div class="brand-logo d-flex align-items-center justify-content-between">
-            <a href="./index.html" class="text-nowrap logo-img">
+            <a href="{{ route('dashboard') }}" class="text-nowrap logo-img">
               <img src="{{ asset('dist\images\logos\alphavest-logo.png') }}" class="dark-logo" width="180" alt="" />
 
             </a>
@@ -47,6 +47,7 @@
                 </a>
               </li>
 
+              @if(in_array(auth()->user()->role, ['admin', 'AK', 'BAK']))
               <li class="sidebar-item">
                 <a class="sidebar-link" href="{{ route('infogeneral.create') }}" aria-expanded="false">
                   <span>
@@ -55,10 +56,7 @@
                   <span class="hide-menu">Nouvel Etablissement</span>
                 </a>
               </li>
-              
-              
-              
-                
+              @endif
               
               <!-- ============================= -->
               <!-- Détails -->
@@ -119,7 +117,7 @@
               </li>
 
               <li class="sidebar-item">
-                <a class="sidebar-link" href="./liste-noire.html" aria-expanded="false">
+                <a class="sidebar-link" href="{{ route('files_list.index') }}" aria-expanded="false">
                   <span class="rounded-3">
                     <i class="ti ti-ban"></i>
                   </span>
@@ -127,14 +125,17 @@
                 </a>
               </li>
 
+              @if(in_array(auth()->user()->role, ['admin', 'CI']))
               <li class="sidebar-item">
-                <a class="sidebar-link" href="./importer-liste.html" aria-expanded="false">
+                <a class="sidebar-link" href="{{ route('import_files.index') }}" aria-expanded="false">
                   <span class="rounded-3">
                     <i class="ti ti-upload"></i>
                   </span>
                   <span class="hide-menu">Importer une liste</span>
                 </a>
               </li>
+              @endif
+
               <!-- =================== -->
               <!-- AUTH -->
               <!-- =================== -->
@@ -143,17 +144,20 @@
                 <span class="hide-menu">GESTION INTERNE</span>
               </li>
 
+              @if(in_array(auth()->user()->role, ['admin', 'AK', 'BAK','CI']))
               <li class="sidebar-item">
-                <a class="sidebar-link" href="./mon-profil.html" aria-expanded="false">
+                <a class="sidebar-link" href="{{ route('profile.edit') }}" aria-expanded="false">
                   <span class="rounded-3">
                     <i class="ti ti-user-circle"></i>
                   </span>
                   <span class="hide-menu">Mon profil</span>
                 </a>
               </li>
+              @endif
 
+              @if(auth()->user()->role === 'admin')
               <li class="sidebar-item">
-                <a class="sidebar-link" href="./utilisateurs.html" aria-expanded="false">
+                <a class="sidebar-link" href="{{ route('users.index') }}" aria-expanded="false">
                   <span class="rounded-3">
                     <i class="ti ti-users"></i>
                   </span>
@@ -169,6 +173,7 @@
                   <span class="hide-menu">Rôles</span>
                 </a>
               </li>
+              @endif
               
           <!-- End Sidebar navigation -->
         </div>

@@ -19,7 +19,20 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $avatars = [];
+        $path = public_path('dist/images/profile');
+        
+        if (file_exists($path)) {
+            $files = glob($path . '/user-*.jpg');
+            if ($files) {
+                natsort($files); // Sort naturally (user-1, user-2, ... user-10)
+                foreach ($files as $file) {
+                    $avatars[] = 'dist/images/profile/' . basename($file);
+                }
+            }
+        }
+
+        return view('auth.register', compact('avatars'));
     }
 
     /**
@@ -33,18 +46,23 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', 'in:AK,CI,BAK,admin'],
+            'avatar' => ['required', 'string'],
+
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'avatar' => $request->avatar,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+
+        return redirect()->back()->with('success', 'le compte a été créé avec succès.');
     }
 }

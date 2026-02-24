@@ -29,7 +29,7 @@ function initCreatePageLogic() {
 
 
             <div class="col-md-2">
-                <input type="text" class="form-control" placeholder="Nom" name="noms_administrateurs[]">
+                <input type="text" class="form-control" placeholder="Nom" name="noms_administrateurs[]" required>
             </div>
             <div class="col-md-1">
                 <input type="text" class="form-control" placeholder="Prénom" name="prenoms_administrateurs[]">

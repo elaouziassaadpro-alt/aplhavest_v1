@@ -8,8 +8,6 @@ use App\Models\Banque;
 use App\Models\Ville;
 
 use App\Models\CoordonneesBancaires;
-use App\Models\InfoGeneral;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
 
 class CoordonneesBancairesController extends Controller
@@ -19,11 +17,7 @@ class CoordonneesBancairesController extends Controller
      */
     public function index()
     {
-        $coordonneesbancaires = CoordonneesBancaires::all();
-    return view(
-            'etablissements.infoetablissement.CoordonneesBancaires.index',
-            compact('coordonneesbancaires')
-        );
+        return view('etablissements.infoetablissement.CoordonneesBancaires.index');
     }
 
     /**
@@ -73,9 +67,7 @@ class CoordonneesBancairesController extends Controller
         return redirect()->route('etablissements.show', $request->etablissement_id)
             ->with('success', 'Coordonnées bancaires enregistrées avec succès.');
     }
-        if ($etablissement->fresh()->isCompleted()) {
-            return redirect()->route('Rating', ['etablissement_id' => $etablissement->id]);
-        }
+        
         
 
         return redirect()->route('typologie.create', ['etablissement_id' => $etablissement->id])

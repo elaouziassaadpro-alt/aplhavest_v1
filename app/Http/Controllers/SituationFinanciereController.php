@@ -48,10 +48,10 @@ class SituationFinanciereController extends Controller
             'etablissement_id' => 'required|integer',
             'capital_social'    => 'nullable|string',
             'origine_fonds'     => 'nullable|string',
-            'paysResidence'     => 'required|integer',
-            'chiffre_affaires'  => 'required|string',
+            'paysResidence'     => 'nullable|integer',
+            'chiffre_affaires'  => 'nullable|string',
             'resultat_net'      => 'nullable|string',
-            'groupe_holding'    => 'required|boolean',
+            'groupe_holding'    => 'nullable|boolean',
             'etat_synthese'     => 'nullable|file|mimes:pdf,png,jpg,jpeg',
         ]);
 
@@ -80,12 +80,7 @@ class SituationFinanciereController extends Controller
 
         
 
-        if ($etablissement->fresh()->isCompleted()) {
-            return redirect()->route('Rating', [
-                    'etablissement_id' => $etablissement->id
-                ]);
-
-        }
+        
 
         return redirect()->route('actionnariat.create',['etablissement_id' => $request->etablissement_id])->with('success', 'Situation financière enregistrée avec succès.');
     }
@@ -128,22 +123,37 @@ class SituationFinanciereController extends Controller
         'etat_synthese'       => 'nullable|file|mimes:pdf,jpg,png|max:2048',
     ]);
 
-    // Remove spaces or commas before saving numeric values
-    $data['capitalSocial'] = isset($data['capitalSocial']) ? str_replace([' ', ','], '', $data['capitalSocial']) : null;
-    $data['resultatsNET'] = isset($data['resultatsNET']) ? str_replace([' ', ','], '', $data['resultatsNET']) : null;
+    // Normalize checkbox
+    $data['holding'] = $request->boolean('holding');
 
-    // Upload fichier états de synthèse
+    // Clean numeric values
+    $data['capitalSocial'] = isset($data['capitalSocial'])
+        ? str_replace([' ', ','], '', $data['capitalSocial'])
+        : null;
+
+    $data['resultatsNET'] = isset($data['resultatsNET'])
+        ? str_replace([' ', ','], '', $data['resultatsNET'])
+        : null;
+
+    // File upload
     if ($request->hasFile('etat_synthese')) {
-        if ($situationFinanciere->etat_synthese) {
+
+        // delete old file safely
+        if ($situationFinanciere && $situationFinanciere->etat_synthese) {
             Storage::disk('public')->delete($situationFinanciere->etat_synthese);
         }
-        $data['etat_synthese'] = $request->file('etat_synthese')->store('situation_financiere', 'public');
+
+        $data['etat_synthese'] = $request
+            ->file('etat_synthese')
+            ->store('situation_financiere', 'public');
     }
 
-    $situationFinanciere->update($data);
+    // ✅ SAFE UPSERT
+    $etablissement->situationFinanciere()->updateOrCreate([], $data);
 
     return back()->with('success', 'Situation financière mise à jour avec succès.');
 }
+
 
 
     /**

@@ -89,9 +89,7 @@ class ObjetRelationController extends Controller
     // Trigger rating update
     $etablissement->updateRiskRating();
 
-    if ($etablissement->fresh()->isCompleted()) {
-        return redirect()->route('Rating', ['etablissement_id' => $etablissement->id]);
-    }
+    
     return redirect()
         ->route('profilrisque.create',['etablissement_id' => $request->etablissement_id])
         ->with('success', 'Objet de la relation enregistré avec succès.');

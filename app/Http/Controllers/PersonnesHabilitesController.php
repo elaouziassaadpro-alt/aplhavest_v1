@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\PersonnesHabilites;
 use App\Models\Ppe;
 use App\Models\InfoGeneral;
+use App\Models\Pays;
 use Illuminate\Http\Request;
 use App\Models\Etablissement;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 
 class PersonnesHabilitesController extends Controller
 {
@@ -17,12 +18,7 @@ class PersonnesHabilitesController extends Controller
      */
     public function index()
     {
-        // Récupérer toutes les personnes habilitées avec leurs relations
-        $personnesHabilites = PersonnesHabilites::with(['ppeRelation', 'lienPpeRelation', 'etablissement'])
-                                ->orderBy('nom_rs')
-                                ->get();
-
-        return view('etablissements.infoetablissement.PersonnesHabilites.index', compact('personnesHabilites'));
+        return view('etablissements.infoetablissement.PersonnesHabilites.index');
     }
 
     /**
@@ -32,8 +28,9 @@ class PersonnesHabilitesController extends Controller
     {
         $etablissement_id = $request->etablissement_id;
         $etablissement = Etablissement::find($etablissement_id);
-         $ppes = Ppe::all();
-        return view("etablissements.infoetablissement.PersonnesHabilites.create", compact("etablissement","ppes"));
+        $ppes = Ppe::all();
+        $pays = Pays::all();
+        return view("etablissements.infoetablissement.PersonnesHabilites.create", compact("etablissement", "ppes", "pays"));
     }
 
     /**
@@ -41,70 +38,77 @@ class PersonnesHabilitesController extends Controller
      */
     public function store(Request $request)
     {
-        $etablissement_id = $request->etablissement_id;
+        $request->validate([
+            'etablissement_id' => 'required|integer',
+            'noms_habilites.*' => 'nullable|string|max:200',
+            'prenoms_habilites.*' => 'nullable|string|max:200',
+            'cin_habilites.*' => 'nullable|string|max:200',
+            'fonctions_habilites.*' => 'nullable|string|max:200',
+            'ppes_habilites_input.*' => 'nullable|exists:ppes,id',
+            'ppes_lien_habilites_input.*' => 'nullable|exists:ppes,id',
+            'nationalites_habilites.*' => 'nullable|exists:pays,id',
+            'notes_habilites.*' => 'nullable|numeric',
+            'percentages_habilites.*' => 'nullable|numeric',
+            'tables_habilites.*' => 'nullable|string',
+            'match_ids_habilites.*' => 'nullable|string',
+        ]);
 
-        $noms               = $request->noms_habilites ?? [];
-        $prenoms            = $request->prenoms_habilites ?? [];
-        $cinPasseport       = $request->cin_habilites ?? [];
-        $fonctions          = $request->fonctions_habilites ?? [];
-        $ppes_input         = $request->ppes_habilites_input ?? [];
-        $ppes_lien_input    = $request->ppes_lien_habilites_input ?? [];
+        DB::beginTransaction();
+        try {
+            $etablissement_id = $request->etablissement_id;
+            $noms = $request->input('noms_habilites', []);
 
-        $cin_files = $request->file('cin_habilites_file', []);
-        $hab_files = $request->file('hab_habilites', []);
+            for ($i = 0; $i < count($noms); $i++) {
+                $personne = PersonnesHabilites::create([
+                    'etablissement_id' => $etablissement_id,
+                    'nom_rs' => $request->input("noms_habilites.$i"),
+                    'prenom' => $request->input("prenoms_habilites.$i"),
+                    'identite' => $request->input("cin_habilites.$i"),
+                    'fonction' => $request->input("fonctions_habilites.$i"),
+                    'ppe' => $request->input("ppes_habilites_check.$i") == 1 ? 1 : 0,
+                    'libelle_ppe' => $request->input("ppes_habilites_check.$i") == 1 ? $request->input("ppes_habilites_input.$i") : null,
+                    'lien_ppe' => $request->input("ppes_lien_habilites_check.$i") == 1 ? 1 : 0,
+                    'libelle_ppe_lien' => $request->input("ppes_lien_habilites_check.$i") == 1 ? $request->input("ppes_lien_habilites_input.$i") : null,
+                    'nationalite_id' => $request->input("nationalites_habilites.$i"),
+                    'note' => $request->input("notes_habilites.$i") ?? 1,
+                    'percentage'  => $request->input("percentages_habilites.$i") ?? 0,
+                    'table_match' => $request->input("tables_habilites.$i"),
+                    'match_id'  => $request->input("match_ids_habilites.$i"),
+                    'cin_file' => $request->input("existing_cin_habilites_file.$i"),
+                    'fichier_habilitation_file' => $request->input("existing_hab_habilites.$i"),
+                ]);
 
-        $total = count($noms);
+                // Upload CIN
+                if ($request->hasFile("cin_habilites_file.$i")) {
+                    $personne->cin_file = $request->file("cin_habilites_file.$i")->store('personneshabilites/cin', 'public');
+                    $personne->save();
+                }
 
-        for ($i = 0; $i < $total; $i++) {
-            $personne = PersonnesHabilites::create([
-                'etablissement_id' => $etablissement_id,
-                'nom_rs' => $noms[$i] ?? null,
-                'prenom' => $prenoms[$i] ?? null,
-                'identite' => $cinPasseport[$i] ?? null,
-                'fonction' => $fonctions[$i] ?? null,
-                'ppe' => $request->has("ppes_habilites_check.$i") ? 1 : 0,
-                'libelle_ppe' => $request->has("ppes_habilites_check.$i") ? ($ppes_input[$i] ?? null) : null,
-                'lien_ppe' => $request->has("ppes_lien_habilites_check.$i") ? 1 : 0,
-                'libelle_ppe_lien' => $request->has("ppes_lien_habilites_check.$i") ? ($ppes_lien_input[$i] ?? null) : null,
-            ]);
-
-            // Upload CIN
-            if (isset($cin_files[$i]) && $cin_files[$i]->isValid()) {
-                $personne->cin_file = $cin_files[$i]->store('personneshabilites/cin', 'public');
-                $personne->save();
+                // Upload Habilitation
+                if ($request->hasFile("hab_habilites.$i")) {
+                    $personne->fichier_habilitation_file = $request->file("hab_habilites.$i")->store('personneshabilites/habilitation', 'public');
+                    $personne->save();
+                }
             }
 
-            // Upload Habilitation
-            if (isset($hab_files[$i]) && $hab_files[$i]->isValid()) {
-                $personne->fichier_habilitation_file = $hab_files[$i]->store('personneshabilites/habilitation', 'public');
-                $personne->save();
+            $etablissement = Etablissement::findOrFail($etablissement_id);
+            $etablissement->updateRiskRating();
+
+            DB::commit();
+
+            if ($request->redirect_to === 'dashboard') {
+                return redirect()->route('etablissements.show', $etablissement_id)
+                    ->with('success', 'Personnes habilitées enregistrées avec succès');
             }
-        }
 
-        $etablissement = Etablissement::findOrFail($request->etablissement_id);
-        $etablissement->updateRiskRating();
-
-        if ($request->redirect_to === 'dashboard') {
-            return redirect()->route('etablissements.show', $request->etablissement_id)
+            return redirect()->route('objetrelation.create', ['etablissement_id' => $etablissement_id])
                 ->with('success', 'Personnes habilitées enregistrées avec succès');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error storing personnes habilites: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de l’enregistrement des personnes habilitées : ' . $e->getMessage())->withInput();
         }
-
-        if ($etablissement->fresh()->isCompleted()) {
-            return redirect()->route('Rating', ['etablissement_id' => $etablissement->id]);
-        }
-
-        
-
-        return redirect()->route('objetrelation.create', ['etablissement_id' => $request->etablissement_id])
-            ->with('success', 'Personnes habilitées enregistrées avec succès');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(PersonnesHabilites $personnesHabilites)
-    {
-        //
     }
 
     /**
@@ -127,6 +131,11 @@ class PersonnesHabilitesController extends Controller
             'fonctions_habilites.*' => 'nullable|string|max:200',
             'ppes_habilites_input.*' => 'nullable|exists:ppes,id',
             'ppes_lien_habilites_input.*' => 'nullable|exists:ppes,id',
+            'nationalites_habilites.*' => 'nullable|exists:pays,id',
+            'notes_habilites.*' => 'nullable|numeric',
+            'percentages_habilites.*' => 'nullable|numeric',
+            'tables_habilites.*' => 'nullable|string',
+            'match_ids_habilites.*' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -135,22 +144,24 @@ class PersonnesHabilitesController extends Controller
             PersonnesHabilites::where('etablissement_id', $etablissement->id)->delete();
 
             // Create new
-            foreach ($request->noms_habilites ?? [] as $i => $nom) {
-                $is_ppe = ($request->ppes_habilites_check[$i] ?? 0) == 1;
-                $is_lien_ppe = ($request->ppes_lien_habilites_check[$i] ?? 0) == 1;
-
+            foreach ($request->input('noms_habilites', []) as $i => $nom) {
                 $personne = PersonnesHabilites::create([
                     'etablissement_id' => $etablissement->id,
                     'nom_rs' => $nom,
-                    'prenom' => $request->prenoms_habilites[$i] ?? null,
-                    'identite' => $request->cin_habilites[$i] ?? null,
-                    'fonction' => $request->fonctions_habilites[$i] ?? null,
-                    'ppe' => $is_ppe ? 1 : 0,
-                    'libelle_ppe' => $is_ppe ? ($request->ppes_habilites_input[$i] ?? null) : null,
-                    'lien_ppe' => $is_lien_ppe ? 1 : 0,
-                    'libelle_ppe_lien' => $is_lien_ppe ? ($request->ppes_lien_habilites_input[$i] ?? null) : null,
-                    'cin_file' => $request->existing_cin_habilites_file[$i] ?? null,
-                    'fichier_habilitation_file' => $request->existing_hab_habilites[$i] ?? null,
+                    'prenom' => $request->input("prenoms_habilites.$i"),
+                    'identite' => $request->input("cin_habilites.$i"),
+                    'fonction' => $request->input("fonctions_habilites.$i"),
+                    'ppe' => $request->input("ppes_habilites_check.$i") == 1 ? 1 : 0,
+                    'libelle_ppe' => $request->input("ppes_habilites_check.$i") == 1 ? $request->input("ppes_habilites_input.$i") : null,
+                    'lien_ppe' => $request->input("ppes_lien_habilites_check.$i") == 1 ? 1 : 0,
+                    'libelle_ppe_lien' => $request->input("ppes_lien_habilites_check.$i") == 1 ? $request->input("ppes_lien_habilites_input.$i") : null,
+                    'nationalite_id' => $request->input("nationalites_habilites.$i"),
+                    'note' => $request->input("notes_habilites.$i") ?? 1,
+                    'percentage'  => $request->input("percentages_habilites.$i") ?? 0,
+                    'table_match' => $request->input("tables_habilites.$i"),
+                    'match_id'  => $request->input("match_ids_habilites.$i"),
+                    'cin_file' => $request->input("existing_cin_habilites_file.$i"),
+                    'fichier_habilitation_file' => $request->input("existing_hab_habilites.$i"),
                 ]);
 
                 // Upload CIN
@@ -173,6 +184,7 @@ class PersonnesHabilitesController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error("Error updating personnes habilites: " . $e->getMessage());
             return redirect()->back()->with('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
         }
     }
@@ -185,20 +197,20 @@ class PersonnesHabilitesController extends Controller
         try {
             $etablissement = $personnesHabilites->etablissement;
             $personnesHabilites->delete();
-
-            // Trigger rating update
             $etablissement?->updateRiskRating();
-
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Erreur lors de la suppression']);
         }
     }
 
+    /**
+     * Bulk delete resources.
+     */
     public function bulkDelete(Request $request)
     {
         try {
-            $ids = $request->input('ids');
+            $ids = $request->input('ids', []);
             if (empty($ids)) {
                 return response()->json(['success' => false, 'message' => 'Aucune sélection.']);
             }
@@ -207,13 +219,84 @@ class PersonnesHabilitesController extends Controller
             $etablissement = $firstItem?->etablissement;
 
             PersonnesHabilites::whereIn('id', $ids)->delete();
-
-            // Trigger rating update
             $etablissement?->updateRiskRating();
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Erreur lors de la suppression groupée']);
         }
+    }
+
+    public function checkRisque(Request $request)
+    {
+        $request->validate([
+            'noms_habilites.*' => 'required|string|max:200',
+            'prenoms_habilites.*' => 'nullable|string|max:200',
+            'cin_habilites.*' => 'nullable|string|max:200',
+            'fonctions_habilites.*' => 'nullable|string|max:200',
+            'ppes_habilites_input.*' => 'nullable|exists:ppes,id',
+            'ppes_lien_habilites_input.*' => 'nullable|exists:ppes,id',
+            'ppes_habilites_check.*' => 'nullable|in:0,1',
+            'ppes_lien_habilites_check.*' => 'nullable|in:0,1',
+            'notes_habilites.*' => 'nullable|numeric',
+            'existing_cin_habilites_file.*' => 'nullable|string',
+            'existing_hab_habilites.*' => 'nullable|string',
+            'cin_habilites_file.*' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+            'hab_habilites.*' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+        ]);
+
+        $etablissement_id = $request->input('etablissement_id');
+        $etablissement = Etablissement::findOrFail($etablissement_id);
+        $redirect_to = $request->input('redirect_to');
+
+        $noms = $request->input('noms_habilites', []);
+        $prenoms = $request->input('prenoms_habilites', []);
+        $cins = $request->input('cin_habilites', []);
+
+        $analyses = [];
+
+        foreach ($noms as $index => $nom) {
+            $personne = new PersonnesHabilites();
+            $personne->nom_rs = $nom;
+            $personne->prenom = $prenoms[$index] ?? null;
+            $personne->identite = $cins[$index] ?? null;
+            $personne->nationalite_id = $request->input("nationalites_habilites.$index");
+            $personne->fonction = $request->input("fonctions_habilites.$index");
+            $personne->note = $request->input("notes_habilites.$index");
+            $personne->cin_file = $request->input("existing_cin_habilites_file.$index");
+            $personne->fichier_habilitation_file = $request->input("existing_hab_habilites.$index");
+
+            // Temporary file storage for analysis
+            if ($request->hasFile("cin_habilites_file.$index")) {
+                $personne->cin_file = $request->file("cin_habilites_file.$index")->store('personneshabilites/cin', 'public');
+            }
+            if ($request->hasFile("hab_habilites.$index")) {
+                $personne->fichier_habilitation_file = $request->file("hab_habilites.$index")->store('personneshabilites/habilitation', 'public');
+            }
+            
+            // PPE
+            $personne->ppe = $request->input("ppes_habilites_check.$index") == "1" ? 1 : 0;
+            $personne->libelle_ppe = $personne->ppe ? $request->input("ppes_habilites_input.$index") : null;
+
+            // Lien PPE
+            $personne->lien_ppe = $request->input("ppes_lien_habilites_check.$index") == "1" ? 1 : 0;
+            $personne->libelle_ppe_lien = $personne->lien_ppe ? $request->input("ppes_lien_habilites_input.$index") : null;
+            
+            $risk = $personne->checkRisk();
+            
+            $personne->percentage  = $risk['percentage'] ?? 0;
+            $personne->table_match = $risk['table'] ?? null;
+            $personne->match_id  = $risk['match_id'] ?? null;
+
+            $analyses[] = [
+                'data' => $personne,
+                'risk' => $risk,
+            ];
+        }
+
+        return view(
+            'etablissements.infoetablissement.PersonnesHabilites.check_risque',
+            compact('analyses', 'redirect_to', 'etablissement')
+        );
     }
 }

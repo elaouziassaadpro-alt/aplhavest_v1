@@ -19,8 +19,7 @@
     <link id="themeColors" rel="stylesheet" href="{{ asset('dist/css/css_file_custom.css') }}" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-  
-
+    @livewireStyles
   </head>
 
   <body>
@@ -54,7 +53,7 @@
   
   @if(session('success') || session('error'))
     @php
-        $type = session('success') ? 'success' : 'danger';
+        $type = session('success') ? '62eb9bff' : 'eb6262ff';
         $message = session('success') ?? session('error');
     @endphp
 
@@ -71,6 +70,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             font-weight: 500;
+            background-color: #{{ $type }};
         "
     >
         <button 
@@ -80,7 +80,7 @@
             aria-label="Close">
         </button>
 
-        <strong>{{ ucfirst($type) }}!</strong> {{ $message }}
+         {{ $message }} !
     </div>
 
     
@@ -89,8 +89,9 @@
 
     <!-- Import Js Files -->
      <script src="{{ asset('dist/libs/jquery/dist/jquery.min.js') }}"></script>
+     @livewireScripts
 @stack('scripts')
-    <script src="{{ asset('dist/libs/jquery/dist/jquery.min.js') }}"></script>
+    <!-- <script src="{{ asset('dist/libs/jquery/dist/jquery.min.js') }}"></script> -->
     <script src="{{ asset('dist/libs/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('dist/js/app.min.js') }}"></script>

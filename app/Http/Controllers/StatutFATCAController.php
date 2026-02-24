@@ -65,12 +65,7 @@ class StatutFATCAController extends Controller
 
         
 
-        if ($etablissement->fresh()->isCompleted()) {
-            return redirect()->route('Rating', [
-                'etablissement_id' => $etablissement->id
-            ]);
-
-        }
+        
 
         return redirect()->route('situationfinanciere.create',['etablissement_id' => $request->etablissement_id])->with('success', 'Statut FATCA enregistré avec succès !');
     
@@ -95,8 +90,10 @@ class StatutFATCAController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, StatutFatca $statutFatca)
+    public function update(Request $request, Etablissement $etablissement)
 {
+    $statutFatca = $etablissement->statutFatca;
+
     $data = $request->validate([
         'usEntity'          => 'nullable|boolean',
         'fichier_usEntity'  => 'nullable|file|mimes:pdf,jpg,png|max:2048',
@@ -105,39 +102,51 @@ class StatutFATCAController extends Controller
         'giin_label_Autres' => 'nullable|string|max:255',
     ]);
 
-    // Normalisation des checkbox
+    // Normalize checkbox
     $data['usEntity'] = $request->boolean('usEntity');
     $data['giin']     = $request->boolean('giin');
 
-    // Logique GIIN
+    // GIIN logic
     if ($data['giin']) {
         $data['giin_label_Autres'] = null;
     } else {
         $data['giin_label'] = null;
     }
 
-    // Gestion du fichier US Entity
+    // File logic
     if ($data['usEntity']) {
+
         if ($request->hasFile('fichier_usEntity')) {
-            if ($statutFatca->fichier_usEntity) {
+
+            // delete old file if exists
+            if ($statutFatca && $statutFatca->fichier_usEntity) {
                 Storage::disk('public')->delete($statutFatca->fichier_usEntity);
             }
-            $data['fichier_usEntity'] = $request->file('fichier_usEntity')
-                                           ->store('fatca', 'public');
+
+            $data['fichier_usEntity'] = $request
+                ->file('fichier_usEntity')
+                ->store('fatca', 'public');
         }
+
     } else {
-        // Supprimer le fichier si US Entity décoché
-        if ($statutFatca->fichier_usEntity) {
+
+        // remove file if unchecked
+        if ($statutFatca && $statutFatca->fichier_usEntity) {
             Storage::disk('public')->delete($statutFatca->fichier_usEntity);
         }
+
         $data['fichier_usEntity'] = null;
     }
 
-    // Mise à jour
-    $statutFatca->update($data);
+    // ✅ SINGLE SOURCE OF TRUTH
+    $etablissement->statutFatca()->updateOrCreate(
+        ['etablissement_id' => $etablissement->id],
+        $data
+    );
 
     return back()->with('success', 'Statut FATCA mis à jour avec succès.');
 }
+
 
 
 

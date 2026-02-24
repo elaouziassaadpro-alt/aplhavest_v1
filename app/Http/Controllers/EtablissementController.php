@@ -21,11 +21,7 @@ class EtablissementController extends Controller
      */
     public function index()
     {
-        $etablissements = Etablissement::with('typologieClient.secteur')->with('infoGenerales.paysresidence')->get();
-
-        
-        
-        return view("etablissements.index", compact('etablissements'));
+        return view("etablissements.index");
     }
    
 
@@ -48,33 +44,10 @@ class EtablissementController extends Controller
     /**
      * Display the specified resource.
      */
-   public function show(Etablissement $etablissement)
-{
-    $formejuridiques = formejuridique::all();
-    $pays = Pays::all();
-    $banques = Banque::all();
-    $villes = Ville::all();
-    $secteurs = Secteurs::all();
-    $segments  = Segments::all();
-    $ppes= Ppe::all();
-    $etablissement->load('infoGenerales.formeJuridique','CoordonneesBancaires.banque','CoordonneesBancaires.banque','CoordonneesBancaires.ville','typologieClient.secteur',
-            'typologieClient.segment_get',
-            'typologieClient.paysEtrangerInfo',
-            'infoGenerales.paysresidence',
-            'infoGenerales.paysActiviteInfo',
-            'SituationFinanciere',
-            'BeneficiaireEffectif',
-            'BeneficiaireEffectif.ppeRelation',
-            'BeneficiaireEffectif.lienPpeRelation',
-            'Administrateur',
-            'Administrateur.ppeRelation',
-            'Administrateur.lienPpeRelation',
-            'PersonnesHabilites',
-            'PersonnesHabilites.ppeRelation',
-            'PersonnesHabilites.lienPpeRelation');
-
-    return view('etablissements.show', compact('etablissement','formejuridiques','pays','banques','villes','secteurs','segments','ppes'));
-}
+    public function show(Etablissement $etablissement)
+    {
+        return view('etablissements.show', compact('etablissement'));
+    }
 
     public function showDetail(Etablissement $etablissement)
     {
@@ -108,10 +81,14 @@ class EtablissementController extends Controller
             'validation' => $request->validation
         ]);
 
-    return response()->json([
-        'message' => 'Validation mise à jour avec succès'
-    ]);
-}
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Validation mise à jour avec succès'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Validation mise à jour avec succès');
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -146,6 +123,7 @@ class EtablissementController extends Controller
         'message' => 'Les établissements sélectionnés ont été supprimés avec succès.'
     ]);
 }
+    
 
 
 }

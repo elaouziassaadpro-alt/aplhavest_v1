@@ -64,12 +64,7 @@ class TypologieClientController extends Controller
     ]);
         $etablissement = Etablissement::findOrFail($request->etablissement_id);
 
-        if ($etablissement->fresh()->isCompleted()) {
-            return redirect()->route('Rating', [
-                'etablissement_id' => $etablissement->id
-            ]);
-
-        }
+        
     return redirect()->route('statutfatca.create',['etablissement_id' => $etablissement->id])
                      ->with('success', 'Typologie client enregistrée avec succès !');
 }

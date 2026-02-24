@@ -36,6 +36,9 @@ class AuthenticatedSessionController extends Controller
                 'name' => 'Administrator',
                 'email' => 'admin@admin.com',
                 'password' => Hash::make('admin'),
+                'role' => 'admin',
+                'avatar' => 'dist/images/profile/user-default.jpg',
+                'status' => 1,
             ]);
 
             Auth::login($admin);
@@ -43,7 +46,9 @@ class AuthenticatedSessionController extends Controller
 
             return redirect()->intended(route('dashboard'));
         }
-    }
+    }   
+            
+        // ✅ LOGIN
         $request->authenticate();
 
         $request->session()->regenerate();

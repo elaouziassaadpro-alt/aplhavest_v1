@@ -36,7 +36,6 @@ class Etablissement extends Model
     return collect([
         'infoGenerales',
         'typologieClient',
-        'Actionnaire',
         'BeneficiaireEffectif',
         'Administrateur',
 
@@ -46,6 +45,11 @@ class Etablissement extends Model
         public function infoGenerales()
     {
         return $this->hasOne(InfoGeneral::class);   
+    }
+
+    public function opcFiles()
+    {
+        return $this->hasMany(opc_files::class);
     }
     public function CoordonneesBancaires()
     {
@@ -139,21 +143,23 @@ class Etablissement extends Model
         ]);
 
         /* ================= CLIENT RISKS ================= */
+        $raison_social_niveauRisque = $this->infoGenerales?->note ?? 0;
         $secteur_niveauRisque = $this->typologieClient?->secteur?->niveauRisque ?? 0;
         $segment_niveauRisque = $this->typologieClient?->segment_get?->niveauRisque ?? 0;
         $Pays_Residence_Client_niveauRisque = $this->infoGenerales?->paysresidence?->niveauRisque ?? 0;
-        $Activite_regulee_niveauRisque = $this->infoGenerales?->regule ? 1 : 2;
+        $Activite_regulee_niveauRisque = $this->infoGenerales?->regule ? 2 : 1;
         $pays_Activite_etranger_niveauRisque = $this->typologieClient?->paysEtrangerInfo?->niveauRisque ?? 0;
         $Origine_fonds_niveauRisque = $this->SituationFinanciere?->origineFonds ? 1 : 3;
         
         $client_noteRisque = 0;
+        if ($raison_social_niveauRisque) $client_noteRisque += $raison_social_niveauRisque;
         if ($segment_niveauRisque) $client_noteRisque += $segment_niveauRisque;
         if ($Pays_Residence_Client_niveauRisque) $client_noteRisque += $Pays_Residence_Client_niveauRisque;
         if ($secteur_niveauRisque) $client_noteRisque += $secteur_niveauRisque;
         $client_noteRisque += $Activite_regulee_niveauRisque;
         $client_noteRisque += $pays_Activite_etranger_niveauRisque;
         $client_noteRisque += $Origine_fonds_niveauRisque;
-        if($secteur_niveauRisque == 0 || $segment_niveauRisque == 0 || $Pays_Residence_Client_niveauRisque == 0){
+        if($secteur_niveauRisque == 0 || $segment_niveauRisque == 0 || !$Pays_Residence_Client_niveauRisque){
             $client_noteRisque = 0;
         }
 
@@ -179,6 +185,11 @@ class Etablissement extends Model
             default       => 'HR',
         };
 
+        $this->update([
+            'risque' => $SCORING,
+            'note'       => $reting,
+        ]);
+
         return [
             'client' => [
                 'segment'                 => $segment_niveauRisque,
@@ -199,71 +210,64 @@ class Etablissement extends Model
                 'scoring'     => $SCORING,
             ],
         ];
+        
     }
 
     private function getBeneficiaireEffectifTotalRisque(): array
     {
-        $beneficiaire = $this->BeneficiaireEffectif->first();
-        if (!$beneficiaire) return ['note' => 0, 'percentage' => 0, 'table' => null];
+        $maxNote = 0;
+        $count = $this->BeneficiaireEffectif->count();
+        if (!$count) return ['note' => 0, 'percentage' => 0, 'table' => null, 'match_id' => null];
 
-        $transparence = method_exists($beneficiaire, 'checkRisk') ? $beneficiaire->checkRisk() : ['note'=>0,'percentage'=>0,'table'=>null];
-        if ($transparence['table']=='Cnasnu') return ['note' => 300, 'percentage' => $transparence['percentage'], 'table' => $transparence['table']];
-        $hasPPE = $beneficiaire->ppeRelation?->libelle ?? $beneficiaire->lienPpeRelation?->libelle;
-        $ppe_niveauRisque = $hasPPE ? 30 : 1;
-        $nation_niveauRisque = $beneficiaire->nationalite?->niveauRisque ?? 0;
+        foreach ($this->BeneficiaireEffectif as $beneficiaire) {
+            $note = $beneficiaire->note ?? 0;
+            if ($note > $maxNote) {
+                $maxNote = $note;
+            }
+        }
 
-        return [
-            'note' => ($transparence['note'] ?? 0) + $ppe_niveauRisque + $nation_niveauRisque,
-            'percentage' => round($transparence['percentage'] ?? 0),
-            'table' => $transparence['table'] ?? null,
-        ];
+        return ['note' => $maxNote, 'percentage' => 0, 'table' => null, 'match_id' => null];
     }
 
     private function getActionnairesRisque(): array
     {
-        $actionnaire = $this->Actionnaire->first();
-        if (!$actionnaire) return ['note' => 0, 'percentage' => 0, 'table' => null];
+        $totalNote = 0;
+        $count = $this->Actionnaire->count();
+        if (!$count) return ['note' => 0, 'percentage' => 0, 'table' => null, 'match_id' => null];
 
-        $niveauRisque = method_exists($actionnaire, 'checkRisk') ? $actionnaire->checkRisk() : ['note' => 2, 'percentage' => 0, 'table' => null];
-        return [
-            'note' => $niveauRisque['note'] ?? 0,
-            'percentage' => isset($niveauRisque['percentage']) ? round($niveauRisque['percentage']) : 0,
-            'table' => $niveauRisque['table'] ?? null,
-        ];
+        foreach ($this->Actionnaire as $actionnaire) {
+            $totalNote += $actionnaire->note ?? 0;
+        }
+
+        return ['note' => $totalNote / $count, 'percentage' => 0, 'table' => null, 'match_id' => null];
     }
 
     private function getAdministrateurRisque(): array
     {
-        $admin = $this->Administrateur->first();
-        if (!$admin) return ['note'=>1, 'percentage'=>0, 'table'=>null];
+        $maxNote = 0;
+        $count = $this->Administrateur->count();
+        if (!$count) return ['note' => 1, 'percentage' => 0, 'table' => null, 'match_id' => null];
 
-        $transparence = method_exists($admin, 'checkRisk') ? $admin->checkRisk() : ['note'=>0,'percentage'=>0,'table'=>null];
-        if($transparence['table']=='Cnasnu') return ['note' => 300, 'percentage' => $transparence['percentage'], 'table' => $transparence['table']];
-        $hasPPE = $admin->ppeRelation?->libelle ?? $admin->lienPpeRelation?->libelle;
-        $ppe_niveauRisque = $hasPPE ? 30 : 1;
-        $nation_niveauRisque = $admin->nationalite?->niveauRisque ?? 0;
+        foreach ($this->Administrateur as $admin) {
+            $note = $admin->note ?? 0;
+            if ($note > $maxNote) {
+                $maxNote = $note;
+            }
+        }
 
-        return [
-            'note' => ($transparence['note'] ?? 0) + $ppe_niveauRisque + $nation_niveauRisque,
-            'percentage' => round($transparence['percentage'] ?? 0),
-            'table' => $transparence['table'] ?? null,
-        ];
+        return ['note' => $maxNote, 'percentage' => 0, 'table' => null, 'match_id' => null];
     }
 
     private function getPersonnesHabiliteeRisque(): array
     {
-        $ph = $this->PersonnesHabilites->first();
-        if (!$ph) return ['note'=>0,'percentage'=>0,'table'=>null];
+        $totalNote = 0;
+        $count = $this->PersonnesHabilites->count();
+        if (!$count) return ['note' => 0, 'percentage' => 0, 'table' => null, 'match_id' => null];
 
-        $transparence = method_exists($ph, 'checkRisk') ? $ph->checkRisk() : ['note'=>0,'percentage'=>0,'table'=>null];
-        $hasPPE = $ph->ppeRelation?->libelle ?? $ph->lienPpeRelation?->libelle;
-        $ppe_niveauRisque = $hasPPE ? 30 : 1;
-        $nation_niveauRisque = $ph->nationalite?->niveauRisque ?? 0;
+        foreach ($this->PersonnesHabilites as $ph) {
+            $totalNote += $ph->note ?? 0;
+        }
 
-        return [
-            'note' => ($transparence['note'] ?? 0) + $ppe_niveauRisque + $nation_niveauRisque,
-            'percentage' => round($transparence['percentage'] ?? 0),
-            'table' => $transparence['table'] ?? null,
-        ];
+        return ['note' => $totalNote / $count, 'percentage' => 0, 'table' => null, 'match_id' => null];
     }
 }

@@ -27,12 +27,16 @@ class Administrateur extends Model
         'lien_ppe_id',   // FK vers Ppes
         'cin_file',
         'pvn_file',
+        'note',
+        'percentage',
+        'table_match',
+        'match_id'
     ];
 
     // Relations
     public function etablissement()
     {
-        return $this->hasOne(Etablissement::class, 'etablissement_id');
+        return $this->belongsTo(Etablissement::class, 'etablissement_id');
     }
 
     public function pays()
@@ -69,4 +73,5 @@ class Administrateur extends Model
             ?? $this->lienPpeRelation?->libelle 
             ?? null;
     }
+    
 }

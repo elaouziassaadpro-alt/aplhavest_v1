@@ -7,37 +7,41 @@ use Illuminate\Database\Eloquent\Model;
 
 class InfoGeneral extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\NiveauRisqueTrait;
 
     protected $table = 'info_generales';
 
     protected $fillable = [
-    'etablissement_id',
-    'raisonSocial',
-    'capitalSocialPrimaire',
-    'FormeJuridique',
-    'dateImmatriculation',
-    'ice',
-    'rc',
-    'ice_file',
-    'status_file',
-    'rc_file',
-    'agrement_file',
-    'NI',
-    'FS',
-    'RG',
-    'ifiscal',
-    'siegeSocial',
-    'paysActivite',
-    'paysResidence',
-    'regule',
-    'nomRegulateur',
-    'telephone',
-    'email',
-    'siteweb',
-    'societe_gestion',
-];
+        'etablissement_id',
+        'raisonSocial',
+        'capitalSocialPrimaire',
+        'FormeJuridique',
+        'dateImmatriculation',
+        'ice',
+        'rc',
+        'ice_file',
+        'status_file',
+        'rc_file',
+        'ifiscal',
+        'siegeSocial',
+        'paysActivite',
+        'paysResidence',
+        'regule',
+        'nomRegulateur',
+        'telephone',
+        'email',
+        'siteweb',
+        'societe_gestion',
+        'note',
+        'percentage',
+        'table_match',
+        'match_id',
+    ];
 
+    public function checkRisk()
+    {
+        return $this->checkIdentity();
+    }
 
     // One InfoGeneral has many contacts
 public function paysActiviteInfo()

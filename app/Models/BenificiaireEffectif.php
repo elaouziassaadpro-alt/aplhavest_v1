@@ -27,15 +27,18 @@ class BenificiaireEffectif extends Model
         'ppe_lien_id',
         'ppe',
         'ppe_lien',
-        
+        'note',
+        'percentage',
+        'table_match',
+        'match_id'
     ];
 
 
     // Relation to InfosGenerales
-    public function etablissement()
-    {
-        return $this->hasOne(Etablissement::class, 'etablissement_id');
-    }
+public function etablissement()
+{
+    return $this->belongsTo(Etablissement::class, 'etablissement_id');
+}
     public function paysNaissance()
 {
     return $this->belongsTo(Pays::class, 'pays_naissance_id');

@@ -24,6 +24,11 @@ class PersonnesHabilites extends Model
         'fichier_habilitation_file',
         'lien_ppe',
         'libelle_ppe_lien',
+        'note',
+        'nationalite_id',
+        'percentage',
+        'table_match',
+        'match_id'
     ];
 
     // Relationships
@@ -31,6 +36,11 @@ class PersonnesHabilites extends Model
     public function etablissement()
     {
         return $this->belongsTo(Etablissement::class, 'etablissement_id');
+    }
+
+    public function nationalite()
+    {
+        return $this->belongsTo(Pays::class, 'nationalite_id');
     }
     
     public function ppeRelation()

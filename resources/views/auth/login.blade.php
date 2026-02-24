@@ -30,6 +30,39 @@
     <title>login</title>
 </head>
 <body>
+  @if(session('success') || session('error'))
+    @php
+        $type = session('success') ? 'success' : 'danger';
+        $message = session('success') ?? session('error');
+    @endphp
+
+    <div 
+        id="flashAlert"
+        class="alert alert-{{ $type }} alert-dismissible fade show text-white shadow-lg"
+        role="alert"
+        style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 350px;      /* Custom width */
+            z-index: 1055;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: 500;
+        "
+    >
+        <button 
+            type="button" 
+            class="btn-close btn-close-white" 
+            data-bs-dismiss="alert" 
+            aria-label="Close">
+        </button>
+
+        <strong>{{ ucfirst($type) }}!</strong> {{ $message }}
+    </div>
+
+    
+@endif
     <!-- Preloader -->
 <div class="preloader">
   <img src="{{ asset('dist/images/logos/favicon.ico') }}" alt="loader" class="lds-ripple img-fluid" />
@@ -96,7 +129,6 @@
                       Se souvenir de moi
                     </label>
                   </div>
-                  <a class="text-primary fw-medium" href="{{ route('password.request') }}">Mot de passe oublié ?</a>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 py-8 mb-4 rounded-2">Connexion</button>
               </form>
