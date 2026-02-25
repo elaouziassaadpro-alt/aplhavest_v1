@@ -14,8 +14,16 @@ return new class extends Migration
         Schema::create('info_generales', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('etablissement_id');
-            // Foreign keys (optional, if you have these tables)
             $table->foreign('etablissement_id')->references('id')->on('etablissements')->cascadeOnDelete();
+            
+            $table->decimal('note')->default(0);
+            $table->integer('percentage')->default(0);
+            $table->string('table_match')->nullable();
+            $table->string('match_id')->nullable();
+
+            $table->boolean('validation_CI')->nullable();
+            $table->timestamp('validation_CI_date')->nullable();
+
             $table->string('raisonSocial', 200)->nullable();
             $table->decimal('capitalSocialPrimaire', 15, 2)->default(0);
             $table->unsignedBigInteger('FormeJuridique')->nullable();

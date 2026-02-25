@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EtablissementController;
-use App\Http\Controllers\Dashboard;
+// use App\Http\Controllers\Dashboard; // Removed to avoid conflict with Livewire
 use App\Http\Controllers\InfoGeneralController;
 use App\Http\Controllers\CoordonneesBancairesController;
 use App\Http\Controllers\TypologieClientController;
@@ -17,6 +17,9 @@ use App\Http\Controllers\ObjetRelationController;
 use App\Http\Controllers\ProfilRisqueController;
 use App\Http\Controllers\RatingEtablissementController;
 use App\Http\Controllers\ImportFilesController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\OperationController;
+use App\Http\Controllers\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,9 +27,7 @@ use App\Http\Controllers\ImportFilesController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [Dashboard::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('/', [Dashboard::class ,'index'])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,16 @@ Route::middleware('auth')->group(function () {
 
         // Files List
         Route::get('/files-list', [ImportFilesController::class, 'filesList'])->name('files_list.index');
+
+        // Profile
+        Route::controller(ProfileController::class)->group(function () {
+            Route::get('/profile', 'edit')->name('profile.edit');
+            Route::patch('/profile', 'update')->name('profile.update');
+            Route::delete('/profile', 'destroy')->name('profile.destroy');
+        });
+
+        // Operations Bourse
+        Route::get('operations/create', [OperationController::class, 'create'])->name('operations.create');
     });
 
     /*
@@ -173,8 +184,6 @@ Route::middleware('auth')->group(function () {
             Route::post('/import-files/cnasnus', 'importCnasnus')->name('import.cnasnus');
             Route::post('/import-files/anrf', 'importAnrf')->name('import.anrf');
         });
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     });
 
@@ -183,18 +192,24 @@ Route::middleware('auth')->group(function () {
     | Role Landing Pages
     |--------------------------------------------------------------------------
     */
-    Route::middleware('role:admin')->get('/admin', [Dashboard::class, 'index'])->name('admin.index');
-    Route::middleware('role:CI')->get('/CI', [Dashboard::class, 'index'])->name('CI.index');
-    Route::middleware('role:AK')->get('/AK', [Dashboard::class, 'index'])->name('AK.index');
-    Route::middleware('role:BAK')->get('/BAK', [Dashboard::class, 'index'])->name('BAK.index');
-
-    /*
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+        Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+        Route::patch('/admin/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('admin.users.update-status');
+    });
+    
+  /*
     |--------------------------------------------------------------------------
-    | Admin Exclusive
+    | Editor Routes (Admin, CI)
     |--------------------------------------------------------------------------
     */
-    Route::middleware('role:admin')->group(function () {
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::middleware('role:admin,CI')->group(function(){
+        // Import Files Write Actions
+        Route::controller(ImportFilesController::class)->group(function () {
+            Route::get('/import-files', 'index')->name('import_files.index');
+            Route::post('/import-files/cnasnus', 'importCnasnus')->name('import.cnasnus');
+            Route::post('/import-files/anrf', 'importAnrf')->name('import.anrf');
+        });
     });
 
 });

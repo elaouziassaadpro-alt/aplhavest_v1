@@ -14,23 +14,25 @@ return new class extends Migration
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->boolean('InfoGeneral')->default(false);
-            $table->boolean('CoordonneesBancaire')->default(false);
-            $table->boolean('typologie_clients')->default(false);
-            $table->boolean('statutfatcas')->default(false);
-            $table->boolean('situation_financiere')->default(false);
-            $table->boolean('actionnariat')->default(false);
-            $table->boolean('beneficiaires_effectifs')->default(false);
-            $table->boolean('administrateurs')->default(false);
-            $table->boolean('personnes_habilites')->default(false);
-            $table->boolean('objet_relations')->default(false);
-            $table->boolean('profil_risques')->default(false);
-            $table->string('validation')->nullable();
+            
+            $table->boolean('validation_AK')->nullable();
+            $table->boolean('validation_CI')->nullable();
+            
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('validation_AK_by')->nullable();
+            $table->unsignedBigInteger('validation_CI_by')->nullable();
+            
+            $table->timestamp('validation_AK_date')->nullable();
+            $table->timestamp('validation_CI_date')->nullable();
+            
             $table->string('risque')->nullable();
             $table->integer('note')->default(0);
-            
 
             $table->timestamps();
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('validation_AK_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('validation_CI_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 

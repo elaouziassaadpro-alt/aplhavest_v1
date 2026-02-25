@@ -143,7 +143,7 @@ class EditActionnariat extends Component
 
     public function rejectEtablissement()
     {
-        $this->etablissement->update(['validation' => 'rejete']);
+        $this->etablissement->update(['validation_AK' => 0]);
         session()->flash('error', 'Etablissement rejeté.');
         return redirect()->route('dashboard');
     }
@@ -167,6 +167,8 @@ class EditActionnariat extends Component
         $this->etablissement->updateRiskRating();
 
         $this->editing = false;
+        $this->showRiskModal = false; 
+
         session()->flash('message', 'Actionnariat mis à jour avec succès.');
     }
 

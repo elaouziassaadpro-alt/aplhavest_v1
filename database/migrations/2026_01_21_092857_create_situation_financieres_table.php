@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('capitalSocial')->nullable();
             $table->string('origineFonds', 300)->nullable();
-            $table->unsignedBigInteger('paysOrigineFonds');
+            $table->unsignedBigInteger('paysOrigineFonds')->nullable();
             $table->string('chiffreAffaires', 200)->nullable();
             $table->unsignedBigInteger('resultatsNET')->nullable();
             $table->unsignedBigInteger('holding')->nullable();

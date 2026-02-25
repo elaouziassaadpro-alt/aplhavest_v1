@@ -100,13 +100,13 @@
 
                         <td>
                             @php
-                                if (is_null($etablissement->validation)) {
+                                if (is_null($etablissement->validation_AK)) {
                                     $validationLabel = 'en attente';
                                     $validationClass = 'text-warning';
-                                } elseif ($etablissement->validation === 1) {
+                                } elseif ($etablissement->validation_AK == 1) {
                                     $validationLabel = 'valide';
                                     $validationClass = 'text-success';
-                                } elseif ($etablissement->validation === 0) {
+                                } elseif ($etablissement->validation_AK == 0) {
                                     $validationLabel = 'rejeté';
                                     $validationClass = 'text-danger';
                                 } else {

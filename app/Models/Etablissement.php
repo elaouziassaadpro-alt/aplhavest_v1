@@ -15,20 +15,15 @@ class Etablissement extends Model
     protected $fillable = [
 
         'name',
-        'InfoGeneral',
-        'CoordonneesBancaire',
-        'typologie_clients',
-        'statutfatcas',
-        'situation_financiere',
-        'actionnariat',
-        'beneficiaires_effectifs',
-        'administrateurs',
-        'personnes_habilites',
-        'objet_relations',
-        'profil_risques',
-        'validation',
+        'validation_AK',
         'risque',
         'note',
+        'created_by',
+        'validation_AK_by',
+        'validation_CI_by',
+        'validation_AK_date',
+        'validation_CI_date',
+        'validation_CI',
 
            ];
     public function isCompleted(): bool
@@ -269,5 +264,22 @@ class Etablissement extends Model
         }
 
         return ['note' => $totalNote / $count, 'percentage' => 0, 'table' => null, 'match_id' => null];
+    }
+
+    /* ================= AUDIT RELATIONSHIPS ================= */
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function validatorAK()
+    {
+        return $this->belongsTo(User::class, 'validation_AK_by');
+    }
+
+    public function validatorCI()
+    {
+        return $this->belongsTo(User::class, 'validation_CI_by');
     }
 }

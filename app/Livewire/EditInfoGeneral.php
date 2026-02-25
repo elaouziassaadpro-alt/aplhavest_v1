@@ -280,7 +280,7 @@ class EditInfoGeneral extends Component
 
     public function rejectEtablissement()
     {
-        $this->etablissement->update(['validation' => 'rejete']);
+        $this->etablissement->update(['validation_AK' => 0]);
         session()->flash('error', 'Etablissement rejeté.');
         return redirect()->route('dashboard');
     }
@@ -451,6 +451,7 @@ class EditInfoGeneral extends Component
         }
 
         $this->editing = false;
+        $this->showRiskModal = false;
         session()->flash('message', 'Informations générales mises à jour avec succès.');
     }
 

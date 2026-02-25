@@ -36,6 +36,8 @@ class InfoGeneral extends Model
         'percentage',
         'table_match',
         'match_id',
+        'validation_CI',
+        'validation_CI_date',
     ];
 
     public function checkRisk()

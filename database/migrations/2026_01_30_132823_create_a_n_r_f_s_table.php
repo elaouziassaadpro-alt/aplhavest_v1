@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nom', 500)->nullable();
             $table->string('identifiant', 500)->nullable();
             $table->string('pays', 500)->nullable();
-            $table->dateTime('dateAjout')->nullable();
+            $table->string('dateAjout', 500)->nullable();
             $table->string('activite', 500)->nullable();
             $table->timestamps(); // optional: created_at, updated_at
         });

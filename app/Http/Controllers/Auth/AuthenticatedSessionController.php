@@ -25,35 +25,48 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // ✅ FIRST INSTALL : create admin if no users
-    if (User::count() === 0) {
+        // ✅ FIRST INSTALL: Create admin if no users exist
+        if (User::count() === 0) {
+            if ($request->email === 'admin@admin.com' && $request->password === 'admin') {
+                $admin = User::create([
+                    'name'     => 'Administrator',
+                    'email'    => 'admin@admin.com',
+                    'password' => Hash::make('admin'),
+                    'role'     => User::ROLE_ADMIN,
+                    'avatar'   => 'dist/images/profile/user-default.jpg',
+                    'status'   => 1,
+                ]);
 
-        if (
-            $request->input('email') === 'admin@admin.com' &&
-            $request->input('password') === 'admin'
-        ) {
-            $admin = User::create([ 
-                'name' => 'Administrator',
-                'email' => 'admin@admin.com',
-                'password' => Hash::make('admin'),
-                'role' => 'admin',
-                'avatar' => 'dist/images/profile/user-default.jpg',
-                'status' => 1,
-            ]);
+                Auth::login($admin);
+                $request->session()->regenerate();
 
-            Auth::login($admin);
-            $request->session()->regenerate();
-
-            return redirect()->intended(route('dashboard'));
+                return redirect()->intended(route('admin.index'));
+            }
         }
-    }   
-            
+
         // ✅ LOGIN
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        // Check if user account is active
+        if ($user->status == 0) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->with('error', 'Votre compte est désactivé. Veuillez contacter l\'administrateur.');
+        }
+
+        // Redirect based on role
+        return match ($user->role) {
+            User::ROLE_ADMIN => redirect()->intended(route('admin.index')),
+            User::ROLE_CI    => redirect()->intended(route('CI.index')),
+            User::ROLE_AK    => redirect()->intended(route('AK.index')),
+            User::ROLE_BAK   => redirect()->intended(route('BAK.index')),
+            default          => redirect()->intended(route('dashboard')),
+        };
     }
 
     /**

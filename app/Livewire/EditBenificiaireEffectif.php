@@ -110,7 +110,8 @@ class EditBenificiaireEffectif extends Component
                 'is_high_risk' => ($risk['note'] ?? 1) >= 30 && ($risk['note'] ?? 1) < 300,
                 'is_medium_risk' => ($risk['note'] ?? 1) > 7 && ($risk['note'] ?? 1) < 30,
                 'is_low_risk' => ($risk['note'] ?? 1) >= 1 && ($risk['note'] ?? 1) <= 7,
-                'is_false_positive' => false
+                'is_false_positive' => false,
+                'risk' => $risk
             ];
         }
 
@@ -173,7 +174,7 @@ class EditBenificiaireEffectif extends Component
 
     public function rejectEtablissement()
     {
-        $this->etablissement->update(['validation' => 'rejete']);
+        $this->etablissement->update(['validation_AK' => 0]);
         session()->flash('error', 'Etablissement rejeté.');
         return redirect()->route('dashboard');
     }
@@ -212,6 +213,7 @@ class EditBenificiaireEffectif extends Component
         $this->etablissement->updateRiskRating();
         
         $this->editing = false;
+        $this->showRiskModal = false;
         session()->flash('message', 'Bénéficiaires effectifs mis à jour avec succès.');
     }
 

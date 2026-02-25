@@ -176,7 +176,7 @@ class EditAdministrateurs extends Component
 
     public function rejectEtablissement()
     {
-        $this->etablissement->update(['validation' => 'rejete']);
+        $this->etablissement->update(['validation_AK' => 0]);
         session()->flash('error', 'Etablissement rejeté.');
         return redirect()->route('dashboard');
     }
@@ -221,6 +221,7 @@ class EditAdministrateurs extends Component
         $this->etablissement->updateRiskRating();
 
         $this->editing = false;
+        $this->showRiskModal = false;
         session()->flash('message', 'Administrateurs mis à jour avec succès.');
     }
 

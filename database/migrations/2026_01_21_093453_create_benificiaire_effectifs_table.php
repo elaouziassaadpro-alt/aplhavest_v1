@@ -33,6 +33,9 @@ return new class extends Migration
         $table->unsignedBigInteger('nationalite_id')->nullable();
 
         $table->decimal('pourcentage_capital', 5, 2)->nullable();
+        $table->integer('percentage')->nullable();
+        $table->string('table_match', 255)->nullable();
+        $table->string('match_id', 500)->nullable();
 
         // ============================
         // PPE

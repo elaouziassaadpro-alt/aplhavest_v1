@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class CreateInfoGeneral extends Component
 {
@@ -264,6 +265,7 @@ class CreateInfoGeneral extends Component
         try {
             $etablissement = Etablissement::create([
                 'name' => $this->raisonSocial,
+                'created_by' => Auth::id(),
             ]);
 
             $info = InfoGeneral::create([

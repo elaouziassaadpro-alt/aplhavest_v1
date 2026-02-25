@@ -24,11 +24,12 @@ return new class extends Migration
             $table->string('aliasName', 500)->nullable();
             $table->string('typeOfDocument', 500)->nullable();
             $table->string('documentNumber', 500)->nullable();
-            $table->string('adresse', 500)->nullable();
+            $table->string('adresse', 1000)->nullable();
             $table->string('city', 500)->nullable();
             $table->string('country', 500)->nullable();
             $table->string('dateOfBirth', 500)->nullable();
-            $table->dateTime('dateAjout')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->string('dateAjout', 500)->nullable();
+            $table->text('aliasName')->nullable();
             $table->timestamps(); // optional
         
         });

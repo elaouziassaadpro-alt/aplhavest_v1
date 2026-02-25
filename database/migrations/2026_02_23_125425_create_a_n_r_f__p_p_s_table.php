@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('a_n_r_f__p_p_s', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
-            $table->string('prenom');
-            $table->string('date_naissance');
-            $table->string('profession');
-            $table->string('nationalite');
-            $table->string('identifiant');
+            $table->string('nom')->nullable();
+            $table->string('prenom')->nullable();
+            $table->string('date_naissance')->nullable();
+            $table->string('profession')->nullable();
+            $table->string('nationalite')->nullable();
+            $table->string('identifiant')->nullable();
             $table->timestamps();
         });
     }

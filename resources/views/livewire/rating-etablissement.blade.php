@@ -407,8 +407,8 @@
                     <div class="p-4">
                         <p class="text-muted mb-2">Classification du Risque</p>
                         <h1 class="display-4 fw-bold
-                            @if($facteursCalcul['global']['scoring'] === 'Elevé') text-danger
-                            @elseif($facteursCalcul['global']['scoring'] === 'Moyen') text-warning
+                            @if($facteursCalcul['global']['scoring'] === 'HR') text-danger
+                            @elseif($facteursCalcul['global']['scoring'] === 'MR') text-warning
                             @else text-success
                             @endif">
                             {{ $facteursCalcul['global']['scoring'] }}
@@ -425,11 +425,11 @@
                     <i class="ti ti-printer me-2"></i>Imprimer le Rapport
                 </button>
 
-                @if($etablissement->validation === '1')
+                @if($etablissement->validation == 1)
                     <span class="badge bg-success fs-5 p-3 ms-2">
                         <i class="ti ti-check me-2"></i>Validé
                     </span>
-                @elseif($etablissement->validation === '0')
+                @elseif($etablissement->validation == 0 && $etablissement->validation !== null)
                     <span class="badge bg-danger fs-5 p-3 ms-2">
                         <i class="ti ti-x me-2"></i>Rejeté
                     </span>

@@ -110,10 +110,40 @@
                           </a>
                           <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li>
-                              <a class="dropdown-item d-flex align-items-center gap-3" href="{{ route('profile.edit', ['user_id' => $user->id]) }}"><i class="fs-4 ti ti-edit"></i>Edit</a>
-                              
+                              <a class="dropdown-item d-flex align-items-center gap-3" href="{{ route('profile.edit', ['user_id' => $user->id]) }}"><i class="fs-4 ti ti-edit"></i>Modifier Profil</a>
                             </li>
-                            
+                            <li>
+                              <form action="{{ route('admin.users.update-status', $user->id) }}" method="POST" id="status-form-{{ $user->id }}">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="role" value="{{ $user->role }}">
+                                @if($user->status == 1)
+                                    <input type="hidden" name="status" value="0">
+                                    <a class="dropdown-item d-flex align-items-center gap-3" href="javascript:void(0)" onclick="document.getElementById('status-form-{{ $user->id }}').submit(); text-warning">
+                                        <i class="fs-4 ti ti-player-pause"></i>Désactiver
+                                    </a>
+                                @else
+                                    <input type="hidden" name="status" value="1">
+                                    <a class="dropdown-item d-flex align-items-center gap-3" href="javascript:void(0)" onclick="document.getElementById('status-form-{{ $user->id }}').submit(); text-success">
+                                        <i class="fs-4 ti ti-player-play"></i>Activer
+                                    </a>
+                                @endif
+                              </form>
+                            </li>
+                            @if($user->id !== auth()->id())
+                            <li>
+                              <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                              <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" id="delete-form-{{ $user->id }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                                @csrf
+                                @method('DELETE')
+                                <a class="dropdown-item d-flex align-items-center gap-3 text-danger" href="javascript:void(0)" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) document.getElementById('delete-form-{{ $user->id }}').submit();">
+                                    <i class="fs-4 ti ti-trash"></i>Supprimer
+                                </a>
+                              </form>
+                            </li>
+                            @endif
                           </ul>
                         </div>
                       </td>

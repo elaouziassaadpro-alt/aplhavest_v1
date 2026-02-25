@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Etablissement;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class RatingEtablissement extends Component
 {
@@ -59,13 +61,25 @@ class RatingEtablissement extends Component
 
     public function validateEtablissement()
     {
-        $this->etablissement->update(['validation' => '1']);
+        $updateData = [];
+
+        if (Auth::user()->isCI()) {
+            $updateData['validation_CI'] = 1;
+            $updateData['validation_CI_date'] = now();
+            $updateData['validation_CI_by'] = Auth::id();
+        } else {
+            $updateData['validation_AK'] = 1;
+            $updateData['validation_AK_date'] = now();
+            $updateData['validation_AK_by'] = Auth::id();
+        }
+
+        $this->etablissement->update($updateData);
         session()->flash('success', 'Etablissement validé avec succès.');
     }
 
     public function rejectEtablissement()
     {
-        $this->etablissement->update(['validation' => '0']);
+        $this->etablissement->update(['validation_AK' => 0]);
         session()->flash('success', 'Etablissement rejeté avec succès.');
     }
 

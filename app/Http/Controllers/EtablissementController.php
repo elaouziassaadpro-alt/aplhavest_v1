@@ -73,12 +73,12 @@ class EtablissementController extends Controller
 {
     $request->validate([
         'ids' => 'required|array',
-        'validation' => 'nullable|string|in:valide,rejete'
+        'validation' => 'nullable|integer|in:0,1'
     ]);
 
     Etablissement::whereIn('id', $request->ids)
         ->update([
-            'validation' => $request->validation
+            'validation_AK' => $request->validation
         ]);
 
         if ($request->wantsJson()) {
@@ -108,7 +108,7 @@ class EtablissementController extends Controller
     $etablissements = Etablissement::whereIn('id', $ids)->get();
 
     // Check if any are validated
-    $validated = $etablissements->filter(fn($e) => $e->validation === 'valide');
+    $validated = $etablissements->filter(fn($e) => $e->validation_AK == 1);
 
     if ($validated->isNotEmpty()) {
         return response()->json([

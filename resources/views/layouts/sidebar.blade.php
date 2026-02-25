@@ -109,6 +109,22 @@
 
 
               <!-- ============================= -->
+              <!-- Bourse -->
+              <!-- ============================= -->
+              <li class="nav-small-cap">
+                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                <span class="hide-menu">BOURSE</span>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('operations.create') }}" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-chart-line"></i>
+                  </span>
+                  <span class="hide-menu">Opérations</span>
+                </a>
+              </li>
+
+              <!-- ============================= -->
               <!-- Icons -->
               <!-- ============================= -->
               <li class="nav-small-cap">
@@ -144,7 +160,7 @@
                 <span class="hide-menu">GESTION INTERNE</span>
               </li>
 
-              @if(in_array(auth()->user()->role, ['admin', 'AK', 'BAK','CI']))
+              @if(in_array(auth()->user()->role, ['admin', 'AK', 'BAK', 'CI']))
               <li class="sidebar-item">
                 <a class="sidebar-link" href="{{ route('profile.edit') }}" aria-expanded="false">
                   <span class="rounded-3">
@@ -166,11 +182,11 @@
               </li>
 
               <li class="sidebar-item">
-                <a class="sidebar-link" href="./roles.html" aria-expanded="false">
+                <a class="sidebar-link" href="{{route('admin.index')}}" aria-expanded="false">
                   <span class="rounded-3">
                     <i class="ti ti-lock"></i>
                   </span>
-                  <span class="hide-menu">Rôles</span>
+                  <span class="hide-menu">Admin</span>
                 </a>
               </li>
               @endif
